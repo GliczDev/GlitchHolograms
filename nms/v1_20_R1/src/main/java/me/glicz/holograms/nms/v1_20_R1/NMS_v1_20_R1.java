@@ -1,5 +1,6 @@
 package me.glicz.holograms.nms.v1_20_R1;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.netty.buffer.Unpooled;
 import io.papermc.paper.adventure.PaperAdventure;
@@ -7,6 +8,8 @@ import me.glicz.holograms.line.HologramLine;
 import me.glicz.holograms.nms.NMS;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
+import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -114,5 +117,26 @@ public class NMS_v1_20_R1 implements NMS {
 
         ClientboundTeleportEntityPacket packet = new ClientboundTeleportEntityPacket(buf);
         getNmsPlayer(player).connection.connection.send(packet);
+    }
+
+    @Override
+    public org.bukkit.inventory.ItemStack deserializeItemStack(String itemStack) {
+        try {
+            ItemParser.ItemResult itemResult = ItemParser.parseForItem(
+                    BuiltInRegistries.ITEM.asLookup(),
+                    new StringReader(itemStack)
+            );
+            return new ItemInput(itemResult.item(), itemResult.nbt())
+                    .createItemStack(1, true)
+                    .asBukkitCopy();
+        } catch (CommandSyntaxException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public String serializeItemStack(org.bukkit.inventory.ItemStack itemStack) {
+        ItemStack nmsItemStack = ItemStack.fromBukkitCopy(itemStack);
+        return new ItemInput(nmsItemStack.getItemHolder(), nmsItemStack.getTag()).serialize();
     }
 }

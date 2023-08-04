@@ -2,6 +2,7 @@ package me.glicz.holograms.nms;
 
 import me.glicz.holograms.line.HologramLine;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -13,4 +14,8 @@ public interface NMS {
     void sendHologramLineDestroy(Player player, HologramLine<?> line);
 
     void sendHologramLineTeleport(Player player, HologramLine<?> line);
+
+    ItemStack deserializeItemStack(String itemStack);
+
+    String serializeItemStack(ItemStack itemStack);
 }
