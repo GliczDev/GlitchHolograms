@@ -3,6 +3,7 @@ package me.glicz.holograms;
 import lombok.Getter;
 import me.glicz.holograms.line.*;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ public class HologramImpl implements Hologram {
     public HologramImpl(String id, Location location) {
         this.id = id;
         this.location = location;
+        viewers.addAll(Bukkit.getOnlinePlayers());
     }
 
     @Override
@@ -56,7 +58,7 @@ public class HologramImpl implements Hologram {
     public <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull T content, double offset, @NotNull Consumer<H> modifier) {
         H hologramLine = classToImpl(clazz, content, offset);
         modifier.accept(hologramLine);
-        if (hologramLines.size() < index + 1)
+        if (hologramLines.size() <= index)
             hologramLines.add(hologramLine);
         else
             hologramLines.add(index, hologramLine);
