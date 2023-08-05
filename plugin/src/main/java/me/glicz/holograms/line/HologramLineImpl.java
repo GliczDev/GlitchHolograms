@@ -49,8 +49,6 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
     @Override
     public void hide(@NotNull Player player) {
-        if (hologram.getViewers().contains(player))
-            throw new IllegalArgumentException(player.getName());
         GlitchHologramsAPI.get().getNms().sendHologramLineDestroy(player, this);
     }
 
