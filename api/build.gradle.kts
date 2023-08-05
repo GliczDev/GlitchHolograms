@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 repositories {
@@ -13,6 +14,7 @@ dependencies {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    withSourcesJar()
 }
 
 tasks {
@@ -20,5 +22,13 @@ tasks {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
         dependsOn(clean)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("publishMaven") {
+            from(components["java"])
+        }
     }
 }
