@@ -8,6 +8,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,11 +17,13 @@ import java.util.function.Consumer;
 
 @Getter
 public class HologramImpl implements Hologram {
+    private final String id;
     private final Location location;
     private final List<HologramLine<?>> hologramLines = new ArrayList<>();
     private final List<Player> viewers = new ArrayList<>();
 
-    public HologramImpl(Location location) {
+    public HologramImpl(String id, Location location) {
+        this.id = id;
         this.location = location;
     }
 
@@ -30,18 +33,33 @@ public class HologramImpl implements Hologram {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull T content, double offset, Consumer<H> modifier) {
-        final H hologramLine;
+    private <H extends HologramLine<T>, T> H classToImpl(Class<H> clazz, T content, double offset) {
         if (clazz.equals(BlockHologramLine.class))
-            hologramLine = (H) new BlockHologramLineImpl(this, (BlockData) content, offset);
+            return (H) new BlockHologramLineImpl(this, (BlockData) content, offset);
         else if (clazz.equals(ItemHologramLine.class))
-            hologramLine = (H) new ItemHologramLineImpl(this, (ItemStack) content, offset);
+            return (H) new ItemHologramLineImpl(this, (ItemStack) content, offset);
         else if (clazz.equals(TextHologramLine.class))
-            hologramLine = (H) new TextHologramLineImpl(this, (Component) content, offset);
+            return (H) new TextHologramLineImpl(this, (Component) content, offset);
         else throw new IllegalArgumentException(clazz.getName());
+    }
+
+    @Override
+    public <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull T content, double offset, @NotNull Consumer<H> modifier) {
+        H hologramLine = classToImpl(clazz, content, offset);
         modifier.accept(hologramLine);
         hologramLines.add(hologramLine);
+        viewers.forEach(hologramLine::show);
+        return hologramLine;
+    }
+
+    @Override
+    public <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull T content, double offset, @NotNull Consumer<H> modifier) {
+        H hologramLine = classToImpl(clazz, content, offset);
+        modifier.accept(hologramLine);
+        if (hologramLines.size() < index + 1)
+            hologramLines.add(hologramLine);
+        else
+            hologramLines.add(index, hologramLine);
         viewers.forEach(hologramLine::show);
         return hologramLine;
     }

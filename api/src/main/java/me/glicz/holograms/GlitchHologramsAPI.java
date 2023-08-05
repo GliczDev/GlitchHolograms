@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Optional;
 
 public interface GlitchHologramsAPI {
     @UnknownNullability("returns null when GlitchHolograms is not enabled")
@@ -20,16 +21,19 @@ public interface GlitchHologramsAPI {
         return provider.getProvider();
     }
 
-    @NotNull
-    @Unmodifiable
-    Set<Hologram> getRegisteredHolograms();
-
     @ApiStatus.Internal
     NMS getNms();
 
-    default Hologram createHologram(Location location) {
-        return createHologram(location, false);
+    default Hologram createHologram(@NotNull String id, @NotNull Location location) {
+        return createHologram(id, location, false);
     }
 
-    Hologram createHologram(Location location, boolean save);
+    Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save);
+
+    @NotNull
+    @Unmodifiable
+    Collection<Hologram> getRegisteredHolograms();
+
+    @NotNull
+    Optional<Hologram> getHologram(String id);
 }
