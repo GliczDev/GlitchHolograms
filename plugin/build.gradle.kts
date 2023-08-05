@@ -7,6 +7,7 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
@@ -15,6 +16,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation(project(":api"))
     implementation(project(":nms", "shadow"))
+    implementation("dev.jorel:commandapi-bukkit-shade:9.0.4-SNAPSHOT")
 }
 
 java {
@@ -29,6 +31,8 @@ tasks {
     }
 
     shadowJar {
+        relocate("dev.jorel.commandapi", "me.glicz.holograms.libs.commandapi")
+
         archiveClassifier.set("")
         archiveBaseName.set(rootProject.name)
     }

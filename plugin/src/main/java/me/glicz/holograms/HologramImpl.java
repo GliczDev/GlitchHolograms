@@ -26,6 +26,8 @@ public class HologramImpl implements Hologram {
     public HologramImpl(String id, Location location) {
         this.id = id;
         this.location = location;
+        this.location.setPitch(0);
+        this.location.setYaw(Math.round(this.location.getYaw() / 45) * 45);
         viewers.addAll(Bukkit.getOnlinePlayers());
     }
 
