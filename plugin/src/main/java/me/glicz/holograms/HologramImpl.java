@@ -62,7 +62,7 @@ public class HologramImpl implements Hologram {
             hologramLines.add(hologramLine);
         else
             hologramLines.add(index, hologramLine);
-        hologramLine.updateLocation();
+        hologramLines.forEach(HologramLine::updateLocation);
         viewers.forEach(hologramLine::show);
         return hologramLine;
     }
