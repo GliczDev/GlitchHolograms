@@ -2,9 +2,11 @@ package me.glicz.holograms;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import lombok.Getter;
 import me.glicz.holograms.command.GlitchHologramsCommand;
 import me.glicz.holograms.listener.PlayerJoinQuitListener;
 import me.glicz.holograms.nms.NMS;
+import me.glicz.holograms.nms.NMSVersionHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.ServicePriority;
@@ -16,6 +18,8 @@ import java.util.*;
 
 public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     private final Map<String, Hologram> registeredHolograms = new HashMap<>();
+    @Getter
+    private NMS nms;
 
     @Override
     public void onLoad() {
@@ -25,6 +29,8 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     @Override
     public void onEnable() {
         CommandAPI.onEnable();
+
+        this.nms = NMSVersionHandler.getNmsInstance(false);
 
         new GlitchHologramsCommand().register();
 
@@ -37,11 +43,6 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     @Override
     public void onDisable() {
         getLogger().info("Successfully disabled!");
-    }
-
-    @Override
-    public NMS getNms() {
-        return new me.glicz.holograms.nms.v1_20_R1.NMS_v1_20_R1();
     }
 
     @Override
