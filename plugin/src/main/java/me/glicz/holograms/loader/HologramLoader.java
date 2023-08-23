@@ -26,9 +26,10 @@ public class HologramLoader {
         File[] files = getHolograms(glitchHolograms);
         if (files == null) return;
         for (File file : files) {
-            String id = file.getName().split("\\.")[0];
+            String fileName = file.getName();
+            String id = fileName.substring(0, fileName.lastIndexOf('.'));
             try {
-                load(glitchHolograms, file.getName(), id, YamlConfiguration.loadConfiguration(file));
+                load(glitchHolograms, id, YamlConfiguration.loadConfiguration(file));
             } catch (Exception e) {
                 glitchHolograms.getSLF4JLogger().error(
                         "Something went wrong while trying to load hologram '%s'".formatted(id), e
@@ -52,13 +53,13 @@ public class HologramLoader {
         });
     }
 
-    public static void load(GlitchHolograms glitchHolograms, String fileName, String id, ConfigurationSection section) {
+    public static void load(GlitchHolograms glitchHolograms, String id, ConfigurationSection section) {
         int version = section.getInt("_version");
         switch (version) {
             case 1 -> load_v1(id, section);
             default -> {
                 glitchHolograms.getLogger().warning(
-                        "Invalid '_version' value (%s) in '%s', loader defaulted to the latest version".formatted(version, fileName)
+                        "Invalid '_version' value (%s) in '%s.yml', loader defaulted to the latest version".formatted(version, id)
                 );
                 load_v1(id, section);
             }
