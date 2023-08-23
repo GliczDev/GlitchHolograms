@@ -6,7 +6,7 @@ import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.GlitchHologramsAPI;
 import me.glicz.holograms.Hologram;
 import me.glicz.holograms.line.HologramLine;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -86,7 +86,7 @@ public class HologramLoader {
             hologram.addHologramLine(type, switch (type) {
                 case BLOCK -> Bukkit.getServer().createBlockData(content);
                 case ITEM -> GlitchHologramsAPI.get().getNms().deserializeItemStack(content);
-                case TEXT -> GsonComponentSerializer.gson().deserialize(content);
+                case TEXT -> MiniMessage.miniMessage().deserialize(content);
             }, offset);
         });
     }

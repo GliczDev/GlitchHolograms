@@ -6,6 +6,7 @@ import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.executors.CommandArguments;
 import me.glicz.holograms.GlitchHologramsAPI;
 import me.glicz.holograms.Hologram;
+import me.glicz.holograms.command.argument.MiniMessageArgument;
 import me.glicz.holograms.line.HologramLine;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Location;
@@ -30,7 +31,7 @@ public class GlitchHologramsCommand implements Command {
                             )
             ).setListed(true))
             .then(new LiteralArgument("type", "text").then(
-                    new AdventureChatComponentArgument("content")
+                    MiniMessageArgument.miniMessageArgument("content")
                             .executesPlayer(this::executeLineCommand)
                             .then(new DoubleArgument("offset")
                                     .executesPlayer(this::executeLineCommand)
