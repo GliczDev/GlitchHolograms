@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import lombok.Getter;
 import me.glicz.holograms.command.GlitchHologramsCommand;
 import me.glicz.holograms.listener.PlayerJoinQuitListener;
+import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.nms.NMS;
 import me.glicz.holograms.nms.NMSVersionHandler;
 import org.bukkit.Bukkit;
@@ -36,6 +37,8 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
 
         Bukkit.getServicesManager().register(GlitchHologramsAPI.class, this, this, ServicePriority.Highest);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinQuitListener(), this);
+
+        HologramLoader.loadAll(this);
 
         getLogger().info("Successfully enabled!");
     }
