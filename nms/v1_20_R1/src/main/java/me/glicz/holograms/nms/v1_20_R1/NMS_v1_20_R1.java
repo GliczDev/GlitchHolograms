@@ -24,7 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -76,7 +75,7 @@ public class NMS_v1_20_R1 implements NMS {
                                             new EntityDataAccessor<>(22, EntityDataSerializers.BLOCK_STATE),
                                             BlockStateParser.parseForBlock(
                                                     BuiltInRegistries.BLOCK.asLookup(),
-                                                    ((BlockData) line.getContent()).getAsString(true),
+                                                    line.getRawContent(),
                                                     false
                                             ).blockState()
                                     );
@@ -86,11 +85,11 @@ public class NMS_v1_20_R1 implements NMS {
                             }
                             case ITEM -> SynchedEntityData.DataValue.create(
                                     new EntityDataAccessor<>(22, EntityDataSerializers.ITEM_STACK),
-                                    ItemStack.fromBukkitCopy((org.bukkit.inventory.ItemStack) line.getContent())
+                                    ItemStack.fromBukkitCopy((org.bukkit.inventory.ItemStack) line.getContent(player))
                             );
                             case TEXT -> SynchedEntityData.DataValue.create(
                                     new EntityDataAccessor<>(22, EntityDataSerializers.COMPONENT),
-                                    PaperAdventure.asVanilla((Component) line.getContent())
+                                    PaperAdventure.asVanilla((Component) line.getContent(player))
                             );
                         }
                 )

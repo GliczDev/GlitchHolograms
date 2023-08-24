@@ -97,7 +97,9 @@ public class GlitchHologramsCommand implements Command {
         Hologram hologram = GlitchHologramsAPI.get().getHologram(args.getUnchecked("id")).orElseThrow();
         if ("add".equals(action) || "insert".equals(action)) {
             HologramLine.Type type = EnumUtils.getEnumIgnoreCase(HologramLine.Type.class, args.getUnchecked("type"));
-            Object content = args.getOptional("content").orElseThrow();
+            String content = type == HologramLine.Type.TEXT
+                    ? args.<String>getOptionalUnchecked("content").orElseThrow()
+                    : args.getRawOptional("content").orElseThrow();
             double offset = args.getOrDefaultUnchecked("offset", 0.4);
             switch (action) {
                 case "add" -> hologram.addHologramLine(type, content, offset);

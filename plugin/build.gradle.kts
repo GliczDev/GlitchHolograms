@@ -9,11 +9,13 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
     maven("https://libraries.minecraft.net")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.1.8")
+    compileOnly("me.clip:placeholderapi:2.11.3")
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation(project(":api"))
@@ -45,4 +47,5 @@ bukkit {
     name = rootProject.name
     author = "Glicz"
     apiVersion = "1.20"
+    softDepend = listOf("PlaceholderAPI")
 }

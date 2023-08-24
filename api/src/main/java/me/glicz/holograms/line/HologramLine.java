@@ -23,7 +23,10 @@ public interface HologramLine<T> {
     Location getLocation();
 
     @NotNull
-    T getContent();
+    T getContent(@NotNull Player player);
+
+    @NotNull
+    String getRawContent();
 
     @NotNull
     Hologram getHologram();

@@ -4,11 +4,9 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
 import lombok.experimental.UtilityClass;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.bukkit.util.StringUtil;
@@ -47,7 +45,8 @@ public class MiniMessageArgument {
             "br",
             "selector",
             "score",
-            "nbt"
+            "nbt",
+            "papi"
     ));
     private final Map<String, TagArguments> tagArgsMap = new HashMap<>(Map.of(
             "nbt", new TagArguments(Set.of("block", "entity", "storage"), false)
@@ -65,10 +64,10 @@ public class MiniMessageArgument {
         List.of("gradient", "transition").forEach(tag -> tagArgsMap.put(tag, new TagArguments(NamedTextColor.NAMES.keys(), true)));
     }
 
-    public static Argument<Component> miniMessageArgument(String nodeName) {
+    public static Argument<String> miniMessageArgument(String nodeName) {
         return new CustomArgument<>(
                 new TextArgument(nodeName),
-                info -> MiniMessage.miniMessage().deserialize(info.currentInput())
+                CustomArgument.CustomArgumentInfo::currentInput
         ).replaceSuggestions((info, builder) -> {
             int tagStart = info.currentArg().lastIndexOf('<') + 1;
             String rawArgument = info.currentArg().substring(tagStart);

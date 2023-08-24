@@ -2,12 +2,9 @@ package me.glicz.holograms;
 
 import lombok.Getter;
 import me.glicz.holograms.line.*;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -37,18 +34,18 @@ public class HologramImpl implements Hologram {
     }
 
     @SuppressWarnings("unchecked")
-    private <H extends HologramLine<T>, T> H classToImpl(Class<H> clazz, T content, double offset) {
+    private <H extends HologramLine<?>> H classToImpl(Class<H> clazz, String content, double offset) {
         if (clazz.equals(BlockHologramLine.class))
-            return (H) new BlockHologramLineImpl(this, (BlockData) content, offset);
+            return (H) new BlockHologramLineImpl(this, content, offset);
         else if (clazz.equals(ItemHologramLine.class))
-            return (H) new ItemHologramLineImpl(this, (ItemStack) content, offset);
+            return (H) new ItemHologramLineImpl(this, content, offset);
         else if (clazz.equals(TextHologramLine.class))
-            return (H) new TextHologramLineImpl(this, (Component) content, offset);
+            return (H) new TextHologramLineImpl(this, content, offset);
         else throw new IllegalArgumentException(clazz.getName());
     }
 
     @Override
-    public <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull T content, double offset, @NotNull Consumer<H> modifier) {
+    public <H extends HologramLine<?>> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier) {
         H hologramLine = classToImpl(clazz, content, offset);
         modifier.accept(hologramLine);
         hologramLines.add(hologramLine);
@@ -57,7 +54,7 @@ public class HologramImpl implements Hologram {
     }
 
     @Override
-    public <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull T content, double offset, @NotNull Consumer<H> modifier) {
+    public <H extends HologramLine<?>> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier) {
         H hologramLine = classToImpl(clazz, content, offset);
         modifier.accept(hologramLine);
         if (hologramLines.size() <= index)

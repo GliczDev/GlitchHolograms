@@ -1,7 +1,7 @@
 package me.glicz.holograms.line;
 
+import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 import me.glicz.holograms.GlitchHologramsAPI;
 import me.glicz.holograms.Hologram;
 import org.bukkit.Bukkit;
@@ -16,20 +16,20 @@ import java.util.UUID;
 public abstract class HologramLineImpl<T> implements HologramLine<T> {
     protected final int entityId;
     protected final UUID uniqueId;
-    protected final T content;
+    protected final String rawContent;
     protected final Hologram hologram;
     protected final double offset;
     protected Location location;
 
     @SuppressWarnings("deprecation")
-    public HologramLineImpl(Hologram hologram, T content, double offset) {
+    public HologramLineImpl(Hologram hologram, String rawContent, double offset) {
         this.entityId = Bukkit.getUnsafe().nextEntityId();
         UUID uuid;
         do {
             uuid = UUID.randomUUID();
         } while (Bukkit.getEntity(uuid) != null);
         this.uniqueId = uuid;
-        this.content = content;
+        this.rawContent = rawContent;
         this.hologram = hologram;
         this.offset = offset;
         updateLocation();
@@ -78,8 +78,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         hologram.getViewers().forEach(viewer -> GlitchHologramsAPI.get().getNms().sendHologramLineTeleport(viewer, this));
     }
 
-    @Getter
-    @Setter
+    @Data
     static class PropertiesImpl implements Properties {
         private Display.Billboard billboard = Display.Billboard.FIXED;
     }

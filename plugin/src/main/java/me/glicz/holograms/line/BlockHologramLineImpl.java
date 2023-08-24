@@ -3,16 +3,26 @@ package me.glicz.holograms.line;
 import lombok.Getter;
 import me.glicz.holograms.GlitchHologramsAPI;
 import me.glicz.holograms.Hologram;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 @Getter
 public class BlockHologramLineImpl extends HologramLineImpl<BlockData> implements BlockHologramLine {
     private final Properties properties;
+    private final BlockData content;
 
-    public BlockHologramLineImpl(Hologram hologram, BlockData content, double offset) {
-        super(hologram, content, offset);
+    public BlockHologramLineImpl(Hologram hologram, String rawContent, double offset) {
+        super(hologram, rawContent, offset);
         this.properties = new PropertiesImpl();
+        this.content = Bukkit.createBlockData(rawContent);
+    }
+
+    @Override
+    public @NotNull BlockData getContent(@NotNull Player player) {
+        return content;
     }
 
     @Override
