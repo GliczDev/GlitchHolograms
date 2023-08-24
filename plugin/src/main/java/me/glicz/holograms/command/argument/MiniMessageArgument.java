@@ -1,6 +1,5 @@
 package me.glicz.holograms.command.argument;
 
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.TextArgument;
@@ -70,32 +69,28 @@ public class MiniMessageArgument {
         return new CustomArgument<>(
                 new TextArgument(nodeName),
                 info -> MiniMessage.miniMessage().deserialize(info.currentInput())
-        ).replaceSuggestions((info, suggestionsBuilder) -> {
+        ).replaceSuggestions((info, builder) -> {
             int tagStart = info.currentArg().lastIndexOf('<') + 1;
             String rawArgument = info.currentArg().substring(tagStart);
             String argument = rawArgument.replaceFirst("/", "");
-            int lastArgStart = argument.lastIndexOf(':') + 1;
-            SuggestionsBuilder builder = suggestionsBuilder.createOffset(
-                    suggestionsBuilder.getStart()
-                            + ((lastArgStart > 0) ? info.currentArg().lastIndexOf(':') + 1 : tagStart)
-                            + (rawArgument.startsWith("/") ? 1 : 0)
-            );
             if (argument.lastIndexOf('>') == -1 && tagStart > 0) {
                 Set<String> suggestions = Set.of();
-                if (!TagResolver.standard().has(argument) && lastArgStart == 0) {
-                    suggestions = StringUtil.copyPartialMatches(argument, tags, new HashSet<>());
-                } else if (lastArgStart > 0 && !rawArgument.startsWith("/")) {
-                    int firstArgStart = argument.indexOf(':');
-                    String tag = argument.substring(0, firstArgStart);
-                    String arg = argument.substring(lastArgStart);
-                    if (tagArgsMap.containsKey(tag)) {
-                        TagArguments tagArguments = tagArgsMap.get(tag);
-                        if (!tagArguments.chain() && (lastArgStart - 1 != firstArgStart))
-                            return builder.buildFuture();
+                int firstArgStart = argument.indexOf(':');
+                int lastArgStart = argument.lastIndexOf(':') + 1;
+                String tag = argument.substring(0, (firstArgStart > -1) ? firstArgStart : argument.length());
+                if (!TagResolver.standard().has(tag) && lastArgStart == 0) {
+                    builder = builder.createOffset(builder.getStart() + tagStart + (rawArgument.startsWith("/") ? 1 : 0));
+                    suggestions = StringUtil.copyPartialMatches(tag, tags, new HashSet<>());
+                } else if (TagResolver.standard().has(tag) && !rawArgument.startsWith("/") && tagArgsMap.containsKey(tag)) {
+                    TagArguments tagArguments = tagArgsMap.get(tag);
+                    if (tagArguments.chain() || lastArgStart - 1 == firstArgStart) {
+                        String arg = argument.substring(lastArgStart);
+                        builder = builder.createOffset(builder.getStart() + info.currentArg().lastIndexOf(':') + 1);
                         suggestions = StringUtil.copyPartialMatches(arg, tagArguments.arguments(), new HashSet<>());
                     }
                 }
-                suggestions.forEach(builder::suggest);
+                for (String suggestion : suggestions)
+                    builder.suggest(suggestion);
             }
             return builder.buildFuture();
         });
