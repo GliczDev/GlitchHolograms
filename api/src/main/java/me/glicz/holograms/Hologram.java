@@ -94,4 +94,8 @@ public interface Hologram {
     void show(@NotNull Player player);
 
     void hide(@NotNull Player player);
+
+    void update();
+
+    void update(@NotNull Player player);
 }

@@ -96,4 +96,14 @@ public class HologramImpl implements Hologram {
         viewers.remove(player);
         hologramLines.forEach(line -> line.hide(player));
     }
+
+    @Override
+    public void update() {
+        viewers.forEach(this::update);
+    }
+
+    @Override
+    public void update(@NotNull Player player) {
+        hologramLines.forEach(line -> line.update(player));
+    }
 }

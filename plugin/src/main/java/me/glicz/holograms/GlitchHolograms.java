@@ -8,6 +8,7 @@ import me.glicz.holograms.listener.PlayerJoinQuitListener;
 import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.nms.NMS;
 import me.glicz.holograms.nms.NMSVersionHandler;
+import me.glicz.holograms.task.AsyncHologramUpdateTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.ServicePriority;
@@ -39,6 +40,8 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
         Bukkit.getPluginManager().registerEvents(new PlayerJoinQuitListener(), this);
 
         HologramLoader.loadAll(this);
+
+        new AsyncHologramUpdateTask().runTaskTimerAsynchronously(this, 20, 20);
 
         getLogger().info("Successfully enabled!");
     }
