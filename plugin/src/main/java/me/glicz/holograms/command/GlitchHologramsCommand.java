@@ -100,7 +100,7 @@ public class GlitchHologramsCommand implements Command {
             String content = type == HologramLine.Type.TEXT
                     ? args.<String>getOptionalUnchecked("content").orElseThrow()
                     : args.getRawOptional("content").orElseThrow();
-            double offset = args.getOrDefaultUnchecked("offset", 0.4);
+            double offset = args.getOrDefaultUnchecked("offset", 0.35);
             switch (action) {
                 case "add" -> hologram.addHologramLine(type, content, offset);
                 case "insert" -> {

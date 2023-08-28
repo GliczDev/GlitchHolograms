@@ -81,7 +81,7 @@ public class HologramLoader {
                     String.valueOf(map.get("content")),
                     "line of index %s (counted from the bottom) has no content".formatted(lines.indexOf(map))
             );
-            double offset = Objects.requireNonNullElse(((Number) map.get("offset")), 0.4).doubleValue();
+            double offset = Objects.requireNonNullElse(((Number) map.get("offset")), 0.35).doubleValue();
             hologram.addHologramLine(type, content, offset);
         });
     }
