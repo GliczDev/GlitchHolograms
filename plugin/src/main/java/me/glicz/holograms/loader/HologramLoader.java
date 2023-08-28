@@ -74,14 +74,14 @@ public class HologramLoader {
         Collections.reverse(lines);
         lines.forEach(map -> {
             HologramLine.Type type = Preconditions.checkNotNull(
-                    EnumUtils.getEnum(HologramLine.Type.class, (String) map.get("type")),
-                    "line of index %s (counted from the bottom) has no type".formatted(lines.indexOf(map))
+                    EnumUtils.getEnum(HologramLine.Type.class, String.valueOf(map.get("type"))),
+                    "line of index %s (counted from the bottom) has no valid type".formatted(lines.indexOf(map))
             );
             String content = Preconditions.checkNotNull(
-                    (String) map.get("content"),
+                    String.valueOf(map.get("content")),
                     "line of index %s (counted from the bottom) has no content".formatted(lines.indexOf(map))
             );
-            double offset = Objects.requireNonNullElse((Double) map.get("offset"), 0.4);
+            double offset = Objects.requireNonNullElse(((Number) map.get("offset")), 0.4).doubleValue();
             hologram.addHologramLine(type, content, offset);
         });
     }
