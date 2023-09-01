@@ -18,10 +18,10 @@ public class AdventureUtil {
                     throw ctx.newException("PlaceholderAPI plugin is not enabled", args);
                 String placeholder = args
                         .popOr("Placeholder value is required")
-                        .value()
-                        .replace('§', '&');
-                return Tag.inserting(LegacyComponentSerializer.legacyAmpersand().deserialize(
+                        .value();
+                return Tag.selfClosingInserting(LegacyComponentSerializer.legacyAmpersand().deserialize(
                         PlaceholderAPI.setPlaceholders(player, placeholder)
+                                .replace('§', '&')
                 ));
             }).build();
 
