@@ -34,6 +34,8 @@ public interface HologramLine<T> {
     @NotNull
     Properties getProperties();
 
+    void setProperties(@NotNull Properties properties);
+
     @ApiStatus.Internal
     void show(@NotNull Player player);
 
@@ -48,14 +50,26 @@ public interface HologramLine<T> {
     void updateLocation();
 
     enum Type {
-        BLOCK,
-        ITEM,
-        TEXT
+        BLOCK(BlockHologramLine.class),
+        ITEM(ItemHologramLine.class),
+        TEXT(TextHologramLine.class);
+
+        private final Class<? extends HologramLine<?>> hologramLineClass;
+
+        Type(Class<? extends HologramLine<?>> hologramLineClass) {
+            this.hologramLineClass = hologramLineClass;
+        }
+
+        public Class<? extends HologramLine<?>> getHologramLineClass() {
+            return hologramLineClass;
+        }
     }
 
     interface Properties {
         Display.Billboard getBillboard();
 
         void setBillboard(Display.Billboard billboard);
+
+        Properties copy();
     }
 }

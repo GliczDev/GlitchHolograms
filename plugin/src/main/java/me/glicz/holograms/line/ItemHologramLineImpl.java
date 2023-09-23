@@ -7,10 +7,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-@Getter
 public class ItemHologramLineImpl extends HologramLineImpl<ItemStack> implements ItemHologramLine {
-    private final Properties properties;
+    @Getter
     private final ItemStack content;
+    private Properties properties;
 
     public ItemHologramLineImpl(Hologram hologram, String rawContent, double offset) {
         super(hologram, rawContent, offset);
@@ -21,5 +21,16 @@ public class ItemHologramLineImpl extends HologramLineImpl<ItemStack> implements
     @Override
     public @NotNull ItemStack getContent(@NotNull Player player) {
         return content;
+    }
+
+    @Override
+    public @NotNull Properties getProperties() {
+        return properties.copy();
+    }
+
+    @Override
+    public void setProperties(@NotNull Properties properties) {
+        this.properties = properties;
+        update();
     }
 }

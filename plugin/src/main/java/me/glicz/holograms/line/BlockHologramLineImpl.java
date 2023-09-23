@@ -9,10 +9,10 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-@Getter
 public class BlockHologramLineImpl extends HologramLineImpl<BlockData> implements BlockHologramLine {
-    private final Properties properties;
+    @Getter
     private final BlockData content;
+    private Properties properties;
 
     public BlockHologramLineImpl(Hologram hologram, String rawContent, double offset) {
         super(hologram, rawContent, offset);
@@ -37,5 +37,16 @@ public class BlockHologramLineImpl extends HologramLineImpl<BlockData> implement
         loc.setY(y);
         this.location = loc.add(-0.5, 0, -0.5);
         hologram.getViewers().forEach(viewer -> GlitchHologramsAPI.get().getNms().sendHologramLineTeleport(viewer, this));
+    }
+
+    @Override
+    public @NotNull Properties getProperties() {
+        return properties.copy();
+    }
+
+    @Override
+    public void setProperties(@NotNull Properties properties) {
+        this.properties = properties;
+        update();
     }
 }

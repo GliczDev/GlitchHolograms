@@ -1,8 +1,6 @@
 package me.glicz.holograms;
 
-import me.glicz.holograms.line.BlockHologramLine;
 import me.glicz.holograms.line.HologramLine;
-import me.glicz.holograms.line.ItemHologramLine;
 import me.glicz.holograms.line.TextHologramLine;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -34,12 +32,7 @@ public interface Hologram {
     }
 
     default HologramLine<?> addHologramLine(HologramLine.@NotNull Type lineType, @NotNull String content, double offset) {
-        Class<? extends HologramLine<?>> clazz = switch (lineType) {
-            case BLOCK -> BlockHologramLine.class;
-            case ITEM -> ItemHologramLine.class;
-            case TEXT -> TextHologramLine.class;
-        };
-        return addHologramLine(clazz, content, offset);
+        return addHologramLine(lineType.getHologramLineClass(), content, offset);
     }
 
     default <H extends HologramLine<?>> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset) {
@@ -66,12 +59,7 @@ public interface Hologram {
     }
 
     default HologramLine<?> insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, HologramLine.@NotNull Type lineType, @NotNull String content, double offset) {
-        Class<? extends HologramLine<?>> clazz = switch (lineType) {
-            case BLOCK -> BlockHologramLine.class;
-            case ITEM -> ItemHologramLine.class;
-            case TEXT -> TextHologramLine.class;
-        };
-        return insertHologramLine(index, clazz, content, offset);
+        return insertHologramLine(index, lineType.getHologramLineClass(), content, offset);
     }
 
     default <H extends HologramLine<?>> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset) {
