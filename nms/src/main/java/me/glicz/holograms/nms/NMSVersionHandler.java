@@ -11,8 +11,7 @@ public class NMSVersionHandler {
         if (useLatest)
             return new NMS_v1_20_R1();
         else {
-            String bukkit = Bukkit.getServer().toString();
-            String version = bukkit.substring(bukkit.indexOf("minecraftVersion") + 17, bukkit.length() - 1);
+            String version = Bukkit.getMinecraftVersion();
             return switch (version) {
                 case "1.20", "1.20.1" -> new NMS_v1_20_R1();
                 default -> throw new UnsupportedVersionException(version);
