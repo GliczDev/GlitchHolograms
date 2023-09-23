@@ -4,6 +4,8 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import lombok.Getter;
 import me.glicz.holograms.command.GlitchHologramsCommand;
+import me.glicz.holograms.line.HologramLine;
+import me.glicz.holograms.line.HologramLineImpl;
 import me.glicz.holograms.listener.PlayerJoinQuitListener;
 import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.nms.NMS;
@@ -52,7 +54,7 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     }
 
     @Override
-    public Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save) {
+    public @NotNull Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save) {
         if (registeredHolograms.containsKey(id))
             throw new IllegalArgumentException("Hologram with id %s already exists!".formatted(id));
         Hologram hologram = new HologramImpl(id, location);
@@ -82,5 +84,10 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     @Override
     public @NotNull Optional<Hologram> getHologram(String id) {
         return Optional.ofNullable(registeredHolograms.get(id));
+    }
+
+    @Override
+    public @NotNull HologramLine.Properties createLineProperties() {
+        return new HologramLineImpl.PropertiesImpl();
     }
 }

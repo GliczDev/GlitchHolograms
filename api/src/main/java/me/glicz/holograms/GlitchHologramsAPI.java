@@ -1,5 +1,6 @@
 package me.glicz.holograms;
 
+import me.glicz.holograms.line.HologramLine;
 import me.glicz.holograms.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,10 +26,12 @@ public interface GlitchHologramsAPI {
     @ApiStatus.Internal
     NMS getNms();
 
+    @NotNull
     default Hologram createHologram(@NotNull String id, @NotNull Location location) {
         return createHologram(id, location, false);
     }
 
+    @NotNull
     Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save);
 
     boolean removeHologram(@NotNull String id);
@@ -43,4 +46,7 @@ public interface GlitchHologramsAPI {
 
     @NotNull
     Optional<Hologram> getHologram(String id);
+
+    @NotNull
+    HologramLine.Properties createLineProperties();
 }
