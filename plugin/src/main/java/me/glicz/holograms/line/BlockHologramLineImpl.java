@@ -1,7 +1,7 @@
 package me.glicz.holograms.line;
 
 import lombok.Getter;
-import me.glicz.holograms.GlitchHologramsAPI;
+import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,7 +36,7 @@ public class BlockHologramLineImpl extends HologramLineImpl<BlockData> implement
         Location loc = hologram.getLocation();
         loc.setY(y);
         this.location = loc.add(-0.5, 0, -0.5);
-        hologram.getViewers().forEach(viewer -> GlitchHologramsAPI.get().getNms().sendHologramLineTeleport(viewer, this));
+        hologram.getViewers().forEach(viewer -> GlitchHolograms.getNms().sendHologramLineTeleport(viewer, entityId, this));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package me.glicz.holograms;
 
 import me.glicz.holograms.line.HologramLine;
-import me.glicz.holograms.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -14,6 +13,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+@ApiStatus.NonExtendable
 public interface GlitchHologramsAPI {
     @UnknownNullability("returns null when GlitchHolograms is not enabled")
     static GlitchHologramsAPI get() {
@@ -22,9 +22,6 @@ public interface GlitchHologramsAPI {
             return null;
         return provider.getProvider();
     }
-
-    @ApiStatus.Internal
-    NMS getNms();
 
     @NotNull
     default Hologram createHologram(@NotNull String id, @NotNull Location location) {

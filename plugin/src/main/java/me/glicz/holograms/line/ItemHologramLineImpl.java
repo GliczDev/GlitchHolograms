@@ -1,7 +1,7 @@
 package me.glicz.holograms.line;
 
 import lombok.Getter;
-import me.glicz.holograms.GlitchHologramsAPI;
+import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +15,7 @@ public class ItemHologramLineImpl extends HologramLineImpl<ItemStack> implements
     public ItemHologramLineImpl(Hologram hologram, String rawContent, double offset) {
         super(hologram, rawContent, offset);
         this.properties = new PropertiesImpl();
-        this.content = GlitchHologramsAPI.get().getNms().deserializeItemStack(rawContent);
+        this.content = GlitchHolograms.getNms().deserializeItemStack(rawContent);
     }
 
     @Override

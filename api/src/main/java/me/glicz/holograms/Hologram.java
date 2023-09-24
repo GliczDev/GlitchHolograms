@@ -4,6 +4,7 @@ import me.glicz.holograms.line.HologramLine;
 import me.glicz.holograms.line.TextHologramLine;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 import org.jetbrains.annotations.Unmodifiable;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 import java.util.function.Consumer;
 
+@ApiStatus.NonExtendable
 public interface Hologram {
     @NotNull
     Location getLocation();
@@ -27,7 +29,7 @@ public interface Hologram {
         return addHologramLine(lineType, content, 0.35);
     }
 
-    default <H extends HologramLine<?>> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content) {
+    default <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content) {
         return addHologramLine(clazz, content, 0.35);
     }
 
@@ -35,16 +37,16 @@ public interface Hologram {
         return addHologramLine(lineType.getHologramLineClass(), content, offset);
     }
 
-    default <H extends HologramLine<?>> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset) {
+    default <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset) {
         return addHologramLine(clazz, content, offset, line -> {
         });
     }
 
-    default <H extends HologramLine<?>> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, @NotNull Consumer<H> modifier) {
+    default <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, @NotNull Consumer<H> modifier) {
         return addHologramLine(clazz, content, 0.35, modifier);
     }
 
-    <H extends HologramLine<?>> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier);
+    <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier);
 
     default TextHologramLine insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull String content) {
         return insertHologramLine(index, TextHologramLine.class, content);
@@ -54,7 +56,7 @@ public interface Hologram {
         return insertHologramLine(index, lineType, content, 0.35);
     }
 
-    default <H extends HologramLine<?>> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content) {
+    default <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content) {
         return insertHologramLine(index, clazz, content, 0.35);
     }
 
@@ -62,16 +64,16 @@ public interface Hologram {
         return insertHologramLine(index, lineType.getHologramLineClass(), content, offset);
     }
 
-    default <H extends HologramLine<?>> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset) {
+    default <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset) {
         return insertHologramLine(index, clazz, content, offset, line -> {
         });
     }
 
-    default <H extends HologramLine<?>> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, @NotNull Consumer<H> modifier) {
+    default <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, @NotNull Consumer<H> modifier) {
         return insertHologramLine(index, clazz, content, 0.35, modifier);
     }
 
-    <H extends HologramLine<?>> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier);
+    <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier);
 
     boolean removeHologramLine(int index);
 

@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 public class HologramImpl implements Hologram {
     private final String id;
     private final Location location;
-    private final List<HologramLine<?>> hologramLines = new ArrayList<>();
+    private final List<HologramLineImpl<?>> hologramLines = new ArrayList<>();
     private final List<Player> viewers = new ArrayList<>();
 
     public HologramImpl(String id, Location location) {
@@ -33,37 +33,38 @@ public class HologramImpl implements Hologram {
         return Collections.unmodifiableList(hologramLines);
     }
 
-    @SuppressWarnings("unchecked")
-    private <H extends HologramLine<?>> H classToImpl(Class<H> clazz, String content, double offset) {
+    private <H extends HologramLine<T>, T> HologramLineImpl<?> classToImpl(Class<H> clazz, String content, double offset) {
         if (clazz.equals(BlockHologramLine.class))
-            return (H) new BlockHologramLineImpl(this, content, offset);
+            return new BlockHologramLineImpl(this, content, offset);
         else if (clazz.equals(ItemHologramLine.class))
-            return (H) new ItemHologramLineImpl(this, content, offset);
+            return new ItemHologramLineImpl(this, content, offset);
         else if (clazz.equals(TextHologramLine.class))
-            return (H) new TextHologramLineImpl(this, content, offset);
+            return new TextHologramLineImpl(this, content, offset);
         else throw new IllegalArgumentException(clazz.getName());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <H extends HologramLine<?>> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier) {
-        H hologramLine = classToImpl(clazz, content, offset);
-        modifier.accept(hologramLine);
+    public <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier) {
+        HologramLineImpl<?> hologramLine = classToImpl(clazz, content, offset);
+        modifier.accept((H) hologramLine);
         hologramLines.add(hologramLine);
         viewers.forEach(hologramLine::show);
-        return hologramLine;
+        return (H) hologramLine;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <H extends HologramLine<?>> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier) {
-        H hologramLine = classToImpl(clazz, content, offset);
-        modifier.accept(hologramLine);
+    public <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier) {
+        HologramLineImpl<?> hologramLine = classToImpl(clazz, content, offset);
+        modifier.accept((H) hologramLine);
         if (hologramLines.size() <= index)
             hologramLines.add(hologramLine);
         else
             hologramLines.add(index, hologramLine);
-        hologramLines.forEach(HologramLine::updateLocation);
+        hologramLines.forEach(HologramLineImpl::updateLocation);
         viewers.forEach(hologramLine::show);
-        return hologramLine;
+        return (H) hologramLine;
     }
 
     @Override
@@ -71,7 +72,7 @@ public class HologramImpl implements Hologram {
         if (hologramLines.size() <= index) return false;
         viewers.forEach(viewer -> hologramLines.get(index).hide(viewer));
         hologramLines.remove(index);
-        hologramLines.forEach(HologramLine::updateLocation);
+        hologramLines.forEach(HologramLineImpl::updateLocation);
         return true;
     }
 

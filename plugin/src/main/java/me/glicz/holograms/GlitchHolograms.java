@@ -2,7 +2,6 @@ package me.glicz.holograms;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
-import lombok.Getter;
 import me.glicz.holograms.command.GlitchHologramsCommand;
 import me.glicz.holograms.line.HologramLine;
 import me.glicz.holograms.line.HologramLineImpl;
@@ -22,8 +21,11 @@ import java.util.*;
 
 public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     private final Map<String, Hologram> registeredHolograms = new HashMap<>();
-    @Getter
     private NMS nms;
+
+    public static NMS getNms() {
+        return ((GlitchHolograms) GlitchHologramsAPI.get()).nms;
+    }
 
     @Override
     public void onLoad() {

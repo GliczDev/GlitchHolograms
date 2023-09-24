@@ -27,9 +27,9 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.UUID;
 
 public class NMS_v1_20_R1 implements NMS {
-
     protected ServerPlayer getNmsPlayer(Player player) {
         return MinecraftServer.getServer().getPlayerList().getPlayer(player.getUniqueId());
     }
@@ -43,10 +43,10 @@ public class NMS_v1_20_R1 implements NMS {
     }
 
     @Override
-    public void sendHologramLine(Player player, HologramLine<?> line) {
+    public void sendHologramLine(Player player, int entityId, UUID uniqueId, HologramLine<?> line) {
         ClientboundAddEntityPacket packet = new ClientboundAddEntityPacket(
-                line.getEntityId(),
-                line.getUniqueId(),
+                entityId,
+                uniqueId,
                 line.getLocation().getX(),
                 line.getLocation().getY(),
                 line.getLocation().getZ(),
@@ -56,13 +56,13 @@ public class NMS_v1_20_R1 implements NMS {
                 0, new Vec3(0, 0, 0), 0
         );
         getNmsPlayer(player).connection.connection.send(packet);
-        sendHologramLineData(player, line);
+        sendHologramLineData(player, entityId, line);
     }
 
     @Override
-    public void sendHologramLineData(Player player, HologramLine<?> line) {
+    public void sendHologramLineData(Player player, int entityId, HologramLine<?> line) {
         ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(
-                line.getEntityId(),
+                entityId,
                 List.of(
                         SynchedEntityData.DataValue.create(
                                 new EntityDataAccessor<>(14, EntityDataSerializers.BYTE),
@@ -98,15 +98,15 @@ public class NMS_v1_20_R1 implements NMS {
     }
 
     @Override
-    public void sendHologramLineDestroy(Player player, HologramLine<?> line) {
-        ClientboundRemoveEntitiesPacket packet = new ClientboundRemoveEntitiesPacket(line.getEntityId());
+    public void sendHologramLineDestroy(Player player, int entityId) {
+        ClientboundRemoveEntitiesPacket packet = new ClientboundRemoveEntitiesPacket(entityId);
         getNmsPlayer(player).connection.connection.send(packet);
     }
 
     @Override
-    public void sendHologramLineTeleport(Player player, HologramLine<?> line) {
+    public void sendHologramLineTeleport(Player player, int entityId, HologramLine<?> line) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeVarInt(line.getEntityId());
+        buf.writeVarInt(entityId);
         buf.writeDouble(line.getLocation().getX());
         buf.writeDouble(line.getLocation().getY());
         buf.writeDouble(line.getLocation().getZ());
@@ -131,11 +131,5 @@ public class NMS_v1_20_R1 implements NMS {
         } catch (CommandSyntaxException ex) {
             throw new RuntimeException(ex.getMessage());
         }
-    }
-
-    @Override
-    public String serializeItemStack(org.bukkit.inventory.ItemStack itemStack) {
-        ItemStack nmsItemStack = ItemStack.fromBukkitCopy(itemStack);
-        return new ItemInput(nmsItemStack.getItemHolder(), nmsItemStack.getTag()).serialize();
     }
 }

@@ -1,8 +1,9 @@
 package me.glicz.holograms.line;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.glicz.holograms.GlitchHologramsAPI;
+import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Bukkit;
@@ -18,7 +19,9 @@ import java.util.function.Function;
 
 @Getter
 public abstract class HologramLineImpl<T> implements HologramLine<T> {
+    @Getter(AccessLevel.NONE)
     protected final int entityId;
+    @Getter(AccessLevel.NONE)
     protected final UUID uniqueId;
     protected final String rawContent;
     protected final Hologram hologram;
@@ -44,16 +47,14 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         return location.clone();
     }
 
-    @Override
     public void show(@NotNull Player player) {
         if (!hologram.getViewers().contains(player))
             throw new IllegalArgumentException(player.getName());
-        GlitchHologramsAPI.get().getNms().sendHologramLine(player, this);
+        GlitchHolograms.getNms().sendHologramLine(player, entityId, uniqueId, this);
     }
 
-    @Override
     public void hide(@NotNull Player player) {
-        GlitchHologramsAPI.get().getNms().sendHologramLineDestroy(player, this);
+        GlitchHolograms.getNms().sendHologramLineDestroy(player, entityId);
     }
 
     @Override
@@ -66,10 +67,9 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         if (!hologram.getHologramLines().contains(this)) return;
         if (!hologram.getViewers().contains(player))
             throw new IllegalArgumentException(player.getName());
-        GlitchHologramsAPI.get().getNms().sendHologramLineData(player, this);
+        GlitchHolograms.getNms().sendHologramLineData(player, entityId, this);
     }
 
-    @Override
     public void updateLocation() {
         double y = hologram.getLocation().getY();
         int index = hologram.getHologramLines().contains(this)
@@ -80,7 +80,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         Location loc = hologram.getLocation();
         loc.setY(y);
         this.location = loc;
-        hologram.getViewers().forEach(viewer -> GlitchHologramsAPI.get().getNms().sendHologramLineTeleport(viewer, this));
+        hologram.getViewers().forEach(viewer -> GlitchHolograms.getNms().sendHologramLineTeleport(viewer, entityId, this));
     }
 
     @AllArgsConstructor

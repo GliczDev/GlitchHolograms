@@ -7,15 +7,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
-
+@ApiStatus.NonExtendable
 public interface HologramLine<T> {
-    @ApiStatus.Internal
-    int getEntityId();
-
-    @ApiStatus.Internal
-    UUID getUniqueId();
-
     @NotNull
     Type getType();
 
@@ -36,18 +29,9 @@ public interface HologramLine<T> {
 
     void setProperties(@NotNull Properties properties);
 
-    @ApiStatus.Internal
-    void show(@NotNull Player player);
-
-    @ApiStatus.Internal
-    void hide(@NotNull Player player);
-
     void update();
 
     void update(@NotNull Player player);
-
-    @ApiStatus.Internal
-    void updateLocation();
 
     enum Type {
         BLOCK(BlockHologramLine.class),
@@ -60,11 +44,14 @@ public interface HologramLine<T> {
             this.hologramLineClass = hologramLineClass;
         }
 
-        public Class<? extends HologramLine<?>> getHologramLineClass() {
-            return hologramLineClass;
+        @SuppressWarnings("unchecked")
+        @ApiStatus.Internal
+        public <T> Class<? extends HologramLine<T>> getHologramLineClass() {
+            return (Class<? extends HologramLine<T>>) hologramLineClass;
         }
     }
 
+    @ApiStatus.NonExtendable
     interface Properties {
         Display.Billboard getBillboard();
 
