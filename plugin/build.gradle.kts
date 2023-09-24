@@ -20,7 +20,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation(project(":api"))
     implementation(project(":nms", "shadow"))
-    implementation("dev.jorel:commandapi-bukkit-shade:9.0.4-SNAPSHOT")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.2.0")
 }
 
 java {

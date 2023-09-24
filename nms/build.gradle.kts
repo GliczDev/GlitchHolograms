@@ -1,6 +1,16 @@
 plugins {
     id("java")
     id("com.github.johnrengelman.shadow") version "8.1.0"
+    id("io.papermc.paperweight.userdev") version "1.5.8" apply false
+}
+
+subprojects {
+    plugins.apply("java")
+    plugins.apply("io.papermc.paperweight.userdev")
+
+    repositories {
+        mavenCentral()
+    }
 }
 
 repositories {
@@ -13,8 +23,7 @@ dependencies {
     compileOnly(project(":api"))
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
-    project(":nms").dependencyProject.subprojects
-        .forEach { implementation(project(":nms:" + it.name, "reobf")) }
+    subprojects.forEach { implementation(project(":nms:" + it.name, "reobf")) }
 }
 
 java {
