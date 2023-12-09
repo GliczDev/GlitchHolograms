@@ -1,5 +1,7 @@
 package me.glicz.holograms.line;
 
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,10 +14,12 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Getter
 public abstract class HologramLineImpl<T> implements HologramLine<T> {
@@ -85,10 +89,25 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
     @AllArgsConstructor
     public enum Property {
-        BILLBOARD(rawValue -> EnumUtils.getEnumIgnoreCase(Display.Billboard.class, rawValue, Display.Billboard.FIXED), Display.Billboard.FIXED);
+        BILLBOARD(
+                rawValue -> EnumUtils.getEnumIgnoreCase(
+                        Display.Billboard.class, String.valueOf(rawValue), Display.Billboard.FIXED
+                ),
+                Display.Billboard.FIXED,
+                () -> {
+                    String[] values = Arrays.stream(Display.Billboard.values())
+                            .map(billboard -> billboard.name().toLowerCase())
+                            .toArray(String[]::new);
+                    return new MultiLiteralArgument("value", values);
+                });
 
-        private final Function<String, Object> converter;
+        private final Function<Object, Object> converter;
         private final Object defaultValue;
+        private final Supplier<Argument<?>> argumentSupplier;
+
+        public Argument<?> getCommandArgument() {
+            return argumentSupplier.get();
+        }
     }
 
     public static class PropertiesImpl implements Properties {
@@ -103,7 +122,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
             this.propertyMap.putAll(propertyMap);
         }
 
-        public void set(Property property, String rawValue) {
+        public void set(Property property, Object rawValue) {
             propertyMap.put(property, property.converter.apply(rawValue));
         }
 

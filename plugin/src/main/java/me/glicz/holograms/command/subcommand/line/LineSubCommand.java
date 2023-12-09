@@ -23,6 +23,7 @@ public class LineSubCommand {
                         ))
                         .then(new LineAddSubCommand().get())
                         .then(new LineInsertSubCommand().get())
+                        .then(new LineModifySubCommand().get())
                         .then(new LineRemoveSubCommand().get())
                 );
     }

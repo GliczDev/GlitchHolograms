@@ -39,7 +39,7 @@ public class HologramLoader_v1 extends HologramLoader {
                     );
                     return;
                 }
-                properties.set(property, String.valueOf(value));
+                properties.set(property, value);
             });
             line.setProperties(properties);
         });

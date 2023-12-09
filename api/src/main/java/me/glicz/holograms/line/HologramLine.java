@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 @ApiStatus.NonExtendable
 public interface HologramLine<T> {
     @NotNull
@@ -28,6 +30,12 @@ public interface HologramLine<T> {
     Properties getProperties();
 
     void setProperties(@NotNull Properties properties);
+
+    default void modifyProperties(Consumer<@NotNull Properties> propertiesConsumer) {
+        Properties properties = getProperties();
+        propertiesConsumer.accept(properties);
+        setProperties(properties);
+    }
 
     void update();
 
