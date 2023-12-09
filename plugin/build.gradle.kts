@@ -37,8 +37,8 @@ tasks {
     shadowJar {
         relocate("dev.jorel.commandapi", "me.glicz.holograms.libs.commandapi")
 
-        archiveClassifier.set("")
-        archiveBaseName.set(rootProject.name)
+        archiveClassifier = null
+        archiveBaseName = rootProject.name
     }
 }
 

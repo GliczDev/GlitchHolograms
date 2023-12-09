@@ -49,7 +49,9 @@ public class MiniMessageArgument {
             "papi"
     ));
     private final Map<String, TagArguments> tagArgsMap = new HashMap<>(Map.of(
-            "nbt", new TagArguments(Set.of("block", "entity", "storage"), false)
+            "nbt", new TagArguments(Set.of("block", "entity", "storage"), false),
+            "click", new TagArguments(ClickEvent.Action.NAMES.keys(), false),
+            "hover", new TagArguments(HoverEvent.Action.NAMES.keys(), false)
     ));
 
     static {
@@ -58,8 +60,7 @@ public class MiniMessageArgument {
             if (StandardTags.decorations().has(arg))
                 tags.add("!" + arg);
         });
-        tagArgsMap.put("click", new TagArguments(ClickEvent.Action.NAMES.keys(), false));
-        tagArgsMap.put("hover", new TagArguments(HoverEvent.Action.NAMES.keys(), false));
+
         List.of("colour", "color", "c").forEach(tag -> tagArgsMap.put(tag, new TagArguments(NamedTextColor.NAMES.keys(), false)));
         List.of("gradient", "transition").forEach(tag -> tagArgsMap.put(tag, new TagArguments(NamedTextColor.NAMES.keys(), true)));
     }
@@ -72,11 +73,13 @@ public class MiniMessageArgument {
             int tagStart = info.currentArg().lastIndexOf('<') + 1;
             String rawArgument = info.currentArg().substring(tagStart);
             String argument = rawArgument.replaceFirst("/", "");
+
             if (argument.lastIndexOf('>') == -1 && tagStart > 0) {
                 Set<String> suggestions = Set.of();
                 int firstArgStart = argument.indexOf(':');
                 int lastArgStart = argument.lastIndexOf(':') + 1;
                 String tag = argument.substring(0, (firstArgStart > -1) ? firstArgStart : argument.length());
+
                 if (!TagResolver.standard().has(tag) && lastArgStart == 0) {
                     builder = builder.createOffset(builder.getStart() + tagStart + (rawArgument.startsWith("/") ? 1 : 0));
                     suggestions = StringUtil.copyPartialMatches(tag, tags, new HashSet<>());
@@ -88,6 +91,7 @@ public class MiniMessageArgument {
                         suggestions = StringUtil.copyPartialMatches(arg, tagArguments.arguments(), new HashSet<>());
                     }
                 }
+
                 for (String suggestion : suggestions)
                     builder.suggest(suggestion);
             }

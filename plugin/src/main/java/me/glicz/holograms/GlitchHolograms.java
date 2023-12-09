@@ -85,6 +85,7 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
 
     @Override
     public @NotNull Optional<Hologram> getHologram(String id) {
+        if (id == null) return Optional.empty();
         return Optional.ofNullable(registeredHolograms.get(id));
     }
 
