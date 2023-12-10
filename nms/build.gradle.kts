@@ -1,6 +1,5 @@
 plugins {
     id("java")
-    id("com.github.johnrengelman.shadow") version "8.1.0"
     id("io.papermc.paperweight.userdev") version "1.5.8" apply false
 }
 
@@ -23,7 +22,7 @@ dependencies {
     compileOnly(project(":api"))
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
-    subprojects.forEach { implementation(project(":nms:" + it.name, "reobf")) }
+    subprojects.forEach { compileOnly(it) }
 }
 
 java {

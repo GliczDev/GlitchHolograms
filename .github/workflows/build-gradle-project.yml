@@ -20,7 +20,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run shadowJar with Gradle Wrapper
-        run: ./gradlew shadowJar
+        run: ./gradlew shadowJarReobf shadowJarMojMap
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:

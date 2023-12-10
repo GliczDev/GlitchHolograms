@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("java")
     id("com.github.johnrengelman.shadow") version "8.1.0"
@@ -12,6 +14,11 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
 
+val nms = project(":nms")
+
+val reobf: Configuration by configurations.creating
+val mojMap: Configuration by configurations.creating
+
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20-R0.1-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.1.8")
@@ -19,8 +26,13 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation(project(":api"))
-    implementation(project(":nms", "shadow"))
     implementation("dev.jorel:commandapi-bukkit-shade:9.2.0")
+
+    implementation(nms)
+    nms.subprojects.forEach {
+        reobf(project(":nms:${it.name}", "reobf"))
+        mojMap(it)
+    }
 }
 
 java {
@@ -34,12 +46,28 @@ tasks {
         dependsOn(clean)
     }
 
-    shadowJar {
+    withType<ShadowJar> {
+        group = "shadow"
+
         relocate("dev.jorel.commandapi", "me.glicz.holograms.libs.commandapi")
 
-        archiveClassifier = null
+        from(sourceSets.main.get().output)
+        from(sourceSets.main.get().runtimeClasspath)
+
         archiveBaseName = rootProject.name
     }
+}
+
+task<ShadowJar>("shadowJarReobf") {
+    from(reobf)
+
+    archiveClassifier = null
+}
+
+task<ShadowJar>("shadowJarMojMap") {
+    from(mojMap)
+
+    archiveClassifier = "mojmap"
 }
 
 bukkit {
