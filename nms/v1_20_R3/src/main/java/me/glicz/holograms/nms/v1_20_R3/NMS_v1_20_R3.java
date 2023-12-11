@@ -1,44 +1,33 @@
-package me.glicz.holograms.nms.v1_20_R2;
+package me.glicz.holograms.nms.v1_20_R3;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.netty.buffer.Unpooled;
 import io.papermc.paper.adventure.PaperAdventure;
 import me.glicz.holograms.line.HologramLine;
-import me.glicz.holograms.nms.v1_20_R1.NMS_v1_20_R1;
+import me.glicz.holograms.nms.v1_20_R2.NMS_v1_20_R2;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
-public class NMS_v1_20_R2 extends NMS_v1_20_R1 {
+public class NMS_v1_20_R3 extends NMS_v1_20_R2 {
     @Override
-    protected void sendPacket(Player player, Packet<?> packet) {
-        getServerPlayer(player).connection.connection.send(packet);
+    protected ServerPlayer getServerPlayer(Player player) {
+        return MinecraftServer.getServer().getPlayerList().getPlayer(player.getUniqueId());
     }
 
-    @Override
-    public void sendHologramLineData(Player player, int entityId, HologramLine<?> line) {
-        ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(
-                entityId,
-                List.of(
-                        SynchedEntityData.DataValue.create(
-                                new EntityDataAccessor<>(15, EntityDataSerializers.BYTE),
-                                (byte) line.getProperties().getBillboard().ordinal()
-                        ),
-                        lineToEntityData(player, line)
-                )
-        );
-        sendPacket(player, packet);
+    protected EntityType<?> getEntityType(HologramLine.Type type) {
+        return switch (type) {
+            case BLOCK -> EntityType.BLOCK_DISPLAY;
+            case ITEM -> EntityType.ITEM_DISPLAY;
+            case TEXT -> EntityType.TEXT_DISPLAY;
+        };
     }
 
     @Override
@@ -71,18 +60,5 @@ public class NMS_v1_20_R2 extends NMS_v1_20_R1 {
                 new EntityDataAccessor<>(23, EntityDataSerializers.COMPONENT),
                 PaperAdventure.asVanilla((Component) line.getContent(player))
         );
-    }
-
-    @Override
-    public void sendHologramLineTeleport(Player player, int entityId, HologramLine<?> line) {
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeVarInt(entityId);
-        buf.writeDouble(line.getLocation().getX());
-        buf.writeDouble(line.getLocation().getY());
-        buf.writeDouble(line.getLocation().getZ());
-        buf.writeByte((byte) ((int) (line.getLocation().getPitch() * 256.0F / 360.0F)));
-        buf.writeByte((byte) ((int) (line.getLocation().getYaw() * 256.0F / 360.0F)));
-        buf.writeBoolean(false);
-        sendPacket(player, new ClientboundTeleportEntityPacket(buf));
     }
 }

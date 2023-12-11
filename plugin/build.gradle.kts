@@ -1,13 +1,11 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id("java")
     id("com.github.johnrengelman.shadow") version "8.1.0"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
 repositories {
-    mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
     maven("https://libraries.minecraft.net")
@@ -26,7 +24,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.26")
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     implementation(project(":api"))
-    implementation("dev.jorel:commandapi-bukkit-shade:9.2.0")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.3.0")
 
     implementation(nms)
     nms.subprojects.forEach {
@@ -35,17 +33,7 @@ dependencies {
     }
 }
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-}
-
 tasks {
-    compileJava {
-        options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
-        dependsOn(clean)
-    }
-
     withType<ShadowJar> {
         group = "shadow"
 

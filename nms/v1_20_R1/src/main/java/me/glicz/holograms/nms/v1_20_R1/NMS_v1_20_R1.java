@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class NMS_v1_20_R1 implements NMS {
-    protected ServerPlayer getNmsPlayer(Player player) {
+    protected ServerPlayer getServerPlayer(Player player) {
         return MinecraftServer.getServer().getPlayerList().getPlayer(player.getUniqueId());
     }
 
     protected void sendPacket(Player player, Packet<?> packet) {
-        getNmsPlayer(player).connection.connection.send(packet);
+        getServerPlayer(player).connection.connection.send(packet);
     }
 
     protected EntityType<?> getEntityType(HologramLine.Type type) {
@@ -73,33 +73,47 @@ public class NMS_v1_20_R1 implements NMS {
                                 new EntityDataAccessor<>(14, EntityDataSerializers.BYTE),
                                 (byte) line.getProperties().getBillboard().ordinal()
                         ),
-                        switch (line.getType()) {
-                            case BLOCK -> {
-                                try {
-                                    yield SynchedEntityData.DataValue.create(
-                                            new EntityDataAccessor<>(22, EntityDataSerializers.BLOCK_STATE),
-                                            BlockStateParser.parseForBlock(
-                                                    BuiltInRegistries.BLOCK.asLookup(),
-                                                    line.getRawContent(),
-                                                    false
-                                            ).blockState()
-                                    );
-                                } catch (CommandSyntaxException ex) {
-                                    throw new RuntimeException(ex.getMessage());
-                                }
-                            }
-                            case ITEM -> SynchedEntityData.DataValue.create(
-                                    new EntityDataAccessor<>(22, EntityDataSerializers.ITEM_STACK),
-                                    ItemStack.fromBukkitCopy((org.bukkit.inventory.ItemStack) line.getContent(player))
-                            );
-                            case TEXT -> SynchedEntityData.DataValue.create(
-                                    new EntityDataAccessor<>(22, EntityDataSerializers.COMPONENT),
-                                    PaperAdventure.asVanilla((Component) line.getContent(player))
-                            );
-                        }
+                        lineToEntityData(player, line)
                 )
         );
         sendPacket(player, packet);
+    }
+
+    protected SynchedEntityData.DataValue<?> lineToEntityData(Player player, HologramLine<?> line) {
+        return switch (line.getType()) {
+            case BLOCK -> blockLineToEntityData(line);
+            case ITEM -> itemLineToEntityData(player, line);
+            case TEXT -> textLineToEntityData(player, line);
+        };
+    }
+
+    protected SynchedEntityData.DataValue<?> blockLineToEntityData(HologramLine<?> line) {
+        try {
+            return SynchedEntityData.DataValue.create(
+                    new EntityDataAccessor<>(22, EntityDataSerializers.BLOCK_STATE),
+                    BlockStateParser.parseForBlock(
+                            BuiltInRegistries.BLOCK.asLookup(),
+                            line.getRawContent(),
+                            false
+                    ).blockState()
+            );
+        } catch (CommandSyntaxException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
+
+    protected SynchedEntityData.DataValue<?> itemLineToEntityData(Player player, HologramLine<?> line) {
+        return SynchedEntityData.DataValue.create(
+                new EntityDataAccessor<>(22, EntityDataSerializers.ITEM_STACK),
+                ItemStack.fromBukkitCopy((org.bukkit.inventory.ItemStack) line.getContent(player))
+        );
+    }
+
+    protected SynchedEntityData.DataValue<?> textLineToEntityData(Player player, HologramLine<?> line) {
+        return SynchedEntityData.DataValue.create(
+                new EntityDataAccessor<>(22, EntityDataSerializers.COMPONENT),
+                PaperAdventure.asVanilla((Component) line.getContent(player))
+        );
     }
 
     @Override
