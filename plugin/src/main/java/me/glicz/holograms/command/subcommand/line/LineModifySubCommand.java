@@ -1,5 +1,6 @@
 package me.glicz.holograms.command.subcommand.line;
 
+import com.google.common.base.CaseFormat;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
@@ -14,7 +15,7 @@ public class LineModifySubCommand implements SubCommand {
     public Argument<?> get() {
         Argument<?> argument = new IntegerArgument("index", 0);
         for (HologramLineImpl.Property property : HologramLineImpl.Property.values())
-            argument.then(new LiteralArgument("type", property.name().toLowerCase())
+            argument.then(new LiteralArgument("type", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_CAMEL, property.name()))
                     .then(property.getCommandArgument()
                             .executesPlayer(this::execute))
                     .setListed(true)

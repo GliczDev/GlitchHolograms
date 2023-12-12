@@ -65,6 +65,18 @@ public interface HologramLine<T> {
 
         void setBillboard(Display.Billboard billboard);
 
+        float getViewRange();
+
+        void setViewRange(float viewRange);
+
+        float getShadowRadius();
+
+        void setShadowRadius(float shadowRadius);
+
+        float getShadowStrength();
+
+        void setShadowStrength(float shadowStrength);
+
         Properties copy();
     }
 }

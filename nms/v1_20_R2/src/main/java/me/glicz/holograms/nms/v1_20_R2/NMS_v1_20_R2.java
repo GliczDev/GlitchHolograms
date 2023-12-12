@@ -35,6 +35,18 @@ public class NMS_v1_20_R2 extends NMS_v1_20_R1 {
                                 new EntityDataAccessor<>(15, EntityDataSerializers.BYTE),
                                 (byte) line.getProperties().getBillboard().ordinal()
                         ),
+                        SynchedEntityData.DataValue.create(
+                                new EntityDataAccessor<>(17, EntityDataSerializers.FLOAT),
+                                line.getProperties().getViewRange()
+                        ),
+                        SynchedEntityData.DataValue.create(
+                                new EntityDataAccessor<>(18, EntityDataSerializers.FLOAT),
+                                line.getProperties().getShadowRadius()
+                        ),
+                        SynchedEntityData.DataValue.create(
+                                new EntityDataAccessor<>(19, EntityDataSerializers.FLOAT),
+                                line.getProperties().getShadowStrength()
+                        ),
                         lineToEntityData(player, line)
                 )
         );

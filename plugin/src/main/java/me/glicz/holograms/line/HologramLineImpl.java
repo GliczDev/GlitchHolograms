@@ -1,6 +1,7 @@
 package me.glicz.holograms.line;
 
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.FloatArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -99,7 +100,20 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
                             .map(billboard -> billboard.name().toLowerCase())
                             .toArray(String[]::new);
                     return new MultiLiteralArgument("value", values);
-                });
+                }),
+        SHADOW_RADIUS(
+                Float.class::cast,
+                0,
+                () -> new FloatArgument("value", 0, 64)),
+        SHADOW_STRENGTH(
+                Float.class::cast,
+                0,
+                () -> new FloatArgument("value", 0)),
+        VIEW_RANGE(
+                Float.class::cast,
+                1,
+                () -> new FloatArgument("value", 0)),
+        ;
 
         private final Function<Object, Object> converter;
         private final Object defaultValue;
@@ -111,14 +125,14 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
     }
 
     public static class PropertiesImpl implements Properties {
-        private final Map<Property, Object> propertyMap = new HashMap<>();
+        protected final Map<Property, Object> propertyMap = new HashMap<>();
 
         public PropertiesImpl() {
             for (Property property : Property.values())
                 propertyMap.put(property, property.defaultValue);
         }
 
-        private PropertiesImpl(Map<Property, Object> propertyMap) {
+        protected PropertiesImpl(Map<Property, Object> propertyMap) {
             this.propertyMap.putAll(propertyMap);
         }
 
@@ -134,6 +148,36 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         @Override
         public void setBillboard(Display.Billboard billboard) {
             propertyMap.put(Property.BILLBOARD, billboard);
+        }
+
+        @Override
+        public float getViewRange() {
+            return (float) propertyMap.get(Property.VIEW_RANGE);
+        }
+
+        @Override
+        public void setViewRange(float viewRange) {
+            propertyMap.put(Property.VIEW_RANGE, viewRange);
+        }
+
+        @Override
+        public float getShadowRadius() {
+            return (float) propertyMap.get(Property.SHADOW_RADIUS);
+        }
+
+        @Override
+        public void setShadowRadius(float shadowRadius) {
+            propertyMap.put(Property.SHADOW_RADIUS, shadowRadius);
+        }
+
+        @Override
+        public float getShadowStrength() {
+            return (float) propertyMap.get(Property.SHADOW_STRENGTH);
+        }
+
+        @Override
+        public void setShadowStrength(float shadowStrength) {
+            propertyMap.put(Property.SHADOW_STRENGTH, shadowStrength);
         }
 
         @Override
