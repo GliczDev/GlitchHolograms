@@ -7,6 +7,9 @@ on:
 
 jobs:
   build-gradle-project:
+    env:
+      REPO_USER: ${{ secrets.REPO_USERNAME }}
+      REPO_PASS: ${{ secrets.REPO_PASSWORD }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project sources
@@ -19,8 +22,8 @@ jobs:
           architecture: x64
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-      - name: Run shadowJar with Gradle Wrapper
-        run: ./gradlew shadowJarReobf shadowJarMojMap
+      - name: Run shadowJar and publish with Gradle Wrapper
+        run: ./gradlew shadowJarReobf shadowJarMojMap api:publish -ProxymcUsername=${{ env.REPO_USER }} -ProxymcPassword=${{ env.REPO_PASS }}
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
