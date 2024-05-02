@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     private final Map<String, Hologram> registeredHolograms = new HashMap<>();
@@ -66,13 +67,15 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     }
 
     @Override
-    public @NotNull Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save) {
+    public @NotNull Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save, Consumer<Hologram> modifier) {
         if (registeredHolograms.containsKey(id)) {
             throw new IllegalArgumentException("Hologram with id %s already exists!".formatted(id));
         }
 
         Hologram hologram = new HologramImpl(id, location);
+        modifier.accept(hologram);
         registeredHolograms.put(id, hologram);
+        Bukkit.getOnlinePlayers().forEach(hologram::show);
         return hologram;
     }
 

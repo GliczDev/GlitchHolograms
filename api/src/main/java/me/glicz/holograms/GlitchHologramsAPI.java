@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
 public interface GlitchHologramsAPI {
@@ -30,7 +31,17 @@ public interface GlitchHologramsAPI {
     }
 
     @NotNull
-    Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save);
+    default Hologram createHologram(@NotNull String id, @NotNull Location location, Consumer<Hologram> modifier) {
+        return createHologram(id, location, false, modifier);
+    }
+
+    @NotNull
+    default Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save) {
+        return createHologram(id, location, save, hologram -> {
+        });
+    }
+
+    Hologram createHologram(@NotNull String id, @NotNull Location location, boolean save, Consumer<Hologram> modifier);
 
     boolean removeHologram(@NotNull String id);
 
