@@ -57,8 +57,9 @@ public class MiniMessageArgument {
     static {
         tags.addAll(NamedTextColor.NAMES.keys());
         Set.copyOf(tags).forEach(arg -> {
-            if (StandardTags.decorations().has(arg))
+            if (StandardTags.decorations().has(arg)) {
                 tags.add("!" + arg);
+            }
         });
 
         List.of("colour", "color", "c").forEach(tag -> tagArgsMap.put(tag, new TagArguments(NamedTextColor.NAMES.keys(), false)));
@@ -92,8 +93,9 @@ public class MiniMessageArgument {
                     }
                 }
 
-                for (String suggestion : suggestions)
+                for (String suggestion : suggestions) {
                     builder.suggest(suggestion);
+                }
             }
             return builder.buildFuture();
         });

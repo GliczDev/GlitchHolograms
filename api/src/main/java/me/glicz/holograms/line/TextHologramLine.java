@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.NonExtendable
 public interface TextHologramLine extends HologramLine<Component> {
     @Override
-    default @NotNull Type getType() {
+    default @NotNull Type type() {
         return Type.TEXT;
     }
 }

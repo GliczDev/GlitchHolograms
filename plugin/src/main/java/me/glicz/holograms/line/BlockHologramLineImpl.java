@@ -1,11 +1,11 @@
 package me.glicz.holograms.line;
 
 import lombok.Getter;
-import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,35 +18,33 @@ public class BlockHologramLineImpl extends HologramLineImpl<BlockData> implement
         super(hologram, rawContent, offset);
         this.properties = new PropertiesImpl();
         this.content = Bukkit.createBlockData(rawContent);
+        updateEntityData();
     }
 
     @Override
-    public @NotNull BlockData getContent(@NotNull Player player) {
+    protected BlockDisplay getEntity() {
+        return (BlockDisplay) super.getEntity();
+    }
+
+    @Override
+    protected Class<? extends Display> entityClass() {
+        return BlockDisplay.class;
+    }
+
+    @Override
+    public @NotNull BlockData content(@NotNull Player player) {
         return content;
     }
 
     @Override
-    public void updateLocation() {
-        double y = hologram.getLocation().getY();
-        int index = hologram.getHologramLines().contains(this)
-                ? hologram.getHologramLines().indexOf(this)
-                : hologram.getHologramLines().size();
-        if (index > 0)
-            y = hologram.getHologramLines().get(index - 1).getLocation().getY() + offset;
-        Location loc = hologram.getLocation();
-        loc.setY(y);
-        this.location = loc.add(-0.5, 0, -0.5);
-        hologram.getViewers().forEach(viewer -> GlitchHolograms.getNms().sendHologramLineTeleport(viewer, entityId, this));
-    }
-
-    @Override
-    public @NotNull Properties getProperties() {
+    public @NotNull Properties properties() {
         return properties.copy();
     }
 
     @Override
-    public void setProperties(@NotNull Properties properties) {
+    public void properties(@NotNull Properties properties) {
         this.properties = properties;
+        updateEntityData();
         update();
     }
 }

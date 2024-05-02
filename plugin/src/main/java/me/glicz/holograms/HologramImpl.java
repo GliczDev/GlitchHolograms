@@ -1,6 +1,7 @@
 package me.glicz.holograms;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import me.glicz.holograms.line.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-@Getter
 public class HologramImpl implements Hologram {
+    @Getter
+    @Accessors(fluent = true)
     private final String id;
     private final Location location;
     private final List<HologramLineImpl<?>> hologramLines = new ArrayList<>();
@@ -25,22 +26,24 @@ public class HologramImpl implements Hologram {
         this.location = location;
         this.location.setPitch(0);
         this.location.setYaw(Math.round(this.location.getYaw() / 45) * 45);
-        viewers.addAll(Bukkit.getOnlinePlayers());
+        this.viewers.addAll(Bukkit.getOnlinePlayers());
     }
 
     @Override
-    public @NotNull List<HologramLine<?>> getHologramLines() {
-        return Collections.unmodifiableList(hologramLines);
+    public @NotNull List<HologramLine<?>> hologramLines() {
+        return List.copyOf(hologramLines);
     }
 
     private <H extends HologramLine<T>, T> HologramLineImpl<?> classToImpl(Class<H> clazz, String content, double offset) {
-        if (clazz.equals(BlockHologramLine.class))
+        if (clazz.equals(BlockHologramLine.class)) {
             return new BlockHologramLineImpl(this, content, offset);
-        else if (clazz.equals(ItemHologramLine.class))
+        } else if (clazz.equals(ItemHologramLine.class)) {
             return new ItemHologramLineImpl(this, content, offset);
-        else if (clazz.equals(TextHologramLine.class))
+        } else if (clazz.equals(TextHologramLine.class)) {
             return new TextHologramLineImpl(this, content, offset);
-        else throw new IllegalArgumentException(clazz.getName());
+        } else {
+            throw new IllegalArgumentException(clazz.getName());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -58,10 +61,11 @@ public class HologramImpl implements Hologram {
     public <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier) {
         HologramLineImpl<?> hologramLine = classToImpl(clazz, content, offset);
         modifier.accept((H) hologramLine);
-        if (hologramLines.size() <= index)
+        if (hologramLines.size() <= index) {
             hologramLines.add(hologramLine);
-        else
+        } else {
             hologramLines.add(index, hologramLine);
+        }
         hologramLines.forEach(HologramLineImpl::updateLocation);
         viewers.forEach(hologramLine::show);
         return (H) hologramLine;
@@ -77,13 +81,13 @@ public class HologramImpl implements Hologram {
     }
 
     @Override
-    public @NotNull Location getLocation() {
+    public @NotNull Location location() {
         return location.clone();
     }
 
     @Override
-    public @NotNull List<Player> getViewers() {
-        return Collections.unmodifiableList(viewers);
+    public @NotNull List<Player> viewers() {
+        return List.copyOf(viewers);
     }
 
     @Override

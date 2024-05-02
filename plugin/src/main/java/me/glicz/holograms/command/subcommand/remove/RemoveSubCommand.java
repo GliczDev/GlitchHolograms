@@ -15,7 +15,7 @@ public class RemoveSubCommand implements SubCommand {
         return new LiteralArgument("remove")
                 .then(new StringArgument("id")
                         .replaceSuggestions(ArgumentSuggestions.strings((info) ->
-                                GlitchHologramsAPI.get().getRegisteredHologramsKeys().toArray(String[]::new)
+                                GlitchHologramsAPI.get().getRegisteredHologramKeys().toArray(String[]::new)
                         ))
                         .executesPlayer(this::execute)
                 );

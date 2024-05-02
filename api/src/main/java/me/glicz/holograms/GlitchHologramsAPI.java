@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,8 +18,9 @@ public interface GlitchHologramsAPI {
     @UnknownNullability("returns null when GlitchHolograms is not enabled")
     static GlitchHologramsAPI get() {
         RegisteredServiceProvider<GlitchHologramsAPI> provider = Bukkit.getServicesManager().getRegistration(GlitchHologramsAPI.class);
-        if (provider == null)
+        if (provider == null) {
             return null;
+        }
         return provider.getProvider();
     }
 
@@ -35,11 +36,11 @@ public interface GlitchHologramsAPI {
 
     @NotNull
     @Unmodifiable
-    Collection<Hologram> getRegisteredHolograms();
+    List<Hologram> getRegisteredHolograms();
 
     @NotNull
     @Unmodifiable
-    Set<String> getRegisteredHologramsKeys();
+    Set<String> getRegisteredHologramKeys();
 
     @NotNull
     Optional<Hologram> getHologram(String id);

@@ -23,29 +23,32 @@ public abstract class HologramLoader {
                 HologramLoader hologramLoader = switch (version) {
                     case 1 -> new HologramLoader_v1();
                     default -> {
-                        glitchHolograms.getLogger().warning(
-                                "Invalid '_version' value (%s) in '%s.yml', loader defaulted to the latest version".formatted(version, id)
+                        glitchHolograms.getSLF4JLogger().warn(
+                                "Invalid '_version' value ({}) in '{}.yml', loader defaulted to the latest version",
+                                version, id
                         );
                         yield new HologramLoader_v1();
                     }
                 };
                 hologramLoader.load(glitchHolograms, id, section);
-            } catch (Throwable throwable) {
-                glitchHolograms.getSLF4JLogger().error(
-                        "Something went wrong while trying to load hologram '%s'".formatted(id), throwable
-                );
+            } catch (Exception ex) {
+                glitchHolograms.getSLF4JLogger().atError()
+                        .setCause(ex)
+                        .log("Something went wrong while trying to load hologram '{}'", id);
             }
         }
     }
 
     private static File[] getHolograms(GlitchHolograms glitchHolograms) {
         File hologramsDir = new File(glitchHolograms.getDataFolder(), "holograms");
-        if (!hologramsDir.exists() && !hologramsDir.mkdirs())
+        if (!hologramsDir.exists() && !hologramsDir.mkdirs()) {
             return null;
+        }
         return hologramsDir.listFiles((dir, name) -> {
             if (name.endsWith(".yml") && !dir.getPath().equals(hologramsDir.getPath())) {
-                glitchHolograms.getLogger().warning(
-                        "Please move '%s' directly to the 'holograms' folder in order to load it!".formatted(name)
+                glitchHolograms.getSLF4JLogger().warn(
+                        "Please move '{}' directly to the 'holograms' folder in order to load it!",
+                        name
                 );
                 return false;
             }

@@ -30,18 +30,16 @@ public class HologramLoader_v1 extends HologramLoader {
         );
         double offset = Objects.requireNonNullElse(((Number) map.get("offset")), 0.35).doubleValue();
         hologram.addHologramLine(type.getHologramLineClass(), content, offset, line -> {
-            HologramLineImpl.PropertiesImpl properties = (HologramLineImpl.PropertiesImpl) line.getProperties();
+            HologramLineImpl.PropertiesImpl properties = (HologramLineImpl.PropertiesImpl) line.properties();
             Objects.requireNonNullElse((Map<?, ?>) map.get("properties"), Map.of()).forEach((key, value) -> {
                 HologramLineImpl.Property property = EnumUtils.getEnumIgnoreCase(HologramLineImpl.Property.class, String.valueOf(key));
                 if (property == null) {
-                    glitchHolograms.getLogger().warning(
-                            "Unknown property: %s".formatted(key)
-                    );
+                    glitchHolograms.getSLF4JLogger().warn("Unknown property: {}", key);
                     return;
                 }
                 properties.set(property, value);
             });
-            line.setProperties(properties);
+            line.properties(properties);
         });
     }
 
@@ -57,12 +55,12 @@ public class HologramLoader_v1 extends HologramLoader {
             int lineIndex = lines.indexOf(map);
             try {
                 loadLine(glitchHolograms, hologram, map);
-            } catch (Throwable throwable) {
-                glitchHolograms.getSLF4JLogger().error(
-                        "Something went wrong while trying to load line of index %s (counted from the bottom) in hologram '%s'"
-                                .formatted(lineIndex, id),
-                        throwable
-                );
+            } catch (Exception ex) {
+                glitchHolograms.getSLF4JLogger().atError()
+                        .setCause(ex)
+                        .log("Something went wrong while trying to load line of index {} (counted from the bottom) in hologram '{}'",
+                                lineIndex, id
+                        );
             }
         });
     }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.NonExtendable
 public interface BlockHologramLine extends HologramLine<BlockData> {
     @Override
-    default @NotNull Type getType() {
+    default @NotNull Type type() {
         return Type.BLOCK;
     }
 }

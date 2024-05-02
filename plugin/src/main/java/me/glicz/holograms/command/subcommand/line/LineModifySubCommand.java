@@ -14,12 +14,13 @@ public class LineModifySubCommand implements SubCommand {
     @Override
     public Argument<?> get() {
         Argument<?> argument = new IntegerArgument("index", 0);
-        for (HologramLineImpl.Property property : HologramLineImpl.Property.values())
+        for (HologramLineImpl.Property property : HologramLineImpl.Property.values()) {
             argument.then(new LiteralArgument("type", CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_CAMEL, property.name()))
                     .then(property.getCommandArgument()
                             .executesPlayer(this::execute))
                     .setListed(true)
             );
+        }
         return new LiteralArgument("modify").then(argument);
     }
 
@@ -32,8 +33,8 @@ public class LineModifySubCommand implements SubCommand {
                             args.<String>getOptionalUnchecked("type").orElseThrow().toUpperCase()
                     );
                     Object value = args.getOptional("value").orElseThrow();
-                    if (hologram.getHologramLines().size() <= index) return;
-                    hologram.getHologramLines().get(index).modifyProperties(properties ->
+                    if (hologram.hologramLines().size() <= index) return;
+                    hologram.hologramLines().get(index).modifyProperties(properties ->
                             ((HologramLineImpl.PropertiesImpl) properties).set(property, value)
                     );
                 },

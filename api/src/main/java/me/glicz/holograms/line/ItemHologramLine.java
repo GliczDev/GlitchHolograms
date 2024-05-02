@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.NonExtendable
 public interface ItemHologramLine extends HologramLine<ItemStack> {
     @Override
-    default @NotNull Type getType() {
+    default @NotNull Type type() {
         return Type.ITEM;
     }
 }

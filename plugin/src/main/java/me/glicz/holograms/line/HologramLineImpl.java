@@ -9,7 +9,6 @@ import lombok.Getter;
 import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
 import org.apache.commons.lang3.EnumUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
@@ -18,74 +17,89 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Getter
 public abstract class HologramLineImpl<T> implements HologramLine<T> {
-    @Getter(AccessLevel.NONE)
-    protected final int entityId;
-    @Getter(AccessLevel.NONE)
-    protected final UUID uniqueId;
     protected final String rawContent;
     protected final Hologram hologram;
     protected final double offset;
+    @Getter(AccessLevel.PROTECTED)
+    private final Display entity;
     protected Location location;
 
-    @SuppressWarnings("deprecation")
     public HologramLineImpl(Hologram hologram, String rawContent, double offset) {
-        this.entityId = Bukkit.getUnsafe().nextEntityId();
-        UUID uuid;
-        do {
-            uuid = UUID.randomUUID();
-        } while (Bukkit.getEntity(uuid) != null);
-        this.uniqueId = uuid;
         this.rawContent = rawContent;
         this.hologram = hologram;
         this.offset = offset;
+
         updateLocation();
+        this.entity = location.getWorld().createEntity(location, entityClass());
     }
 
+    protected abstract Class<? extends Display> entityClass();
+
     @Override
-    public @NotNull Location getLocation() {
+    public @NotNull Location location() {
         return location.clone();
     }
 
     public void show(@NotNull Player player) {
-        if (!hologram.getViewers().contains(player))
+        if (!hologram.viewers().contains(player)) {
             throw new IllegalArgumentException(player.getName());
-        GlitchHolograms.getNms().sendHologramLine(player, entityId, uniqueId, this);
+        }
+
+        GlitchHolograms.get().nmsBridge().sendHologramLine(player, entity, content(player));
     }
 
     public void hide(@NotNull Player player) {
-        GlitchHolograms.getNms().sendHologramLineDestroy(player, entityId);
+        GlitchHolograms.get().nmsBridge().sendHologramLineDestroy(player, entity.getEntityId());
     }
 
     @Override
     public void update() {
-        hologram.getViewers().forEach(this::update);
+        hologram.viewers().forEach(this::update);
     }
 
     @Override
     public void update(@NotNull Player player) {
-        if (!hologram.getHologramLines().contains(this)) return;
-        if (!hologram.getViewers().contains(player))
+        if (!hologram.hologramLines().contains(this)) return;
+        if (!hologram.viewers().contains(player)) {
             throw new IllegalArgumentException(player.getName());
-        GlitchHolograms.getNms().sendHologramLineData(player, entityId, this);
+        }
+
+        GlitchHolograms.get().nmsBridge().sendHologramLineData(player, entity, content(player));
     }
 
     public void updateLocation() {
-        double y = hologram.getLocation().getY();
-        int index = hologram.getHologramLines().contains(this)
-                ? hologram.getHologramLines().indexOf(this)
-                : hologram.getHologramLines().size();
-        if (index > 0)
-            y = hologram.getHologramLines().get(index - 1).getLocation().getY() + offset;
-        Location loc = hologram.getLocation();
+        double y = hologram.location().getY();
+        int index = hologram.hologramLines().contains(this)
+                ? hologram.hologramLines().indexOf(this)
+                : hologram.hologramLines().size();
+        if (index > 0) {
+            y = hologram.hologramLines().get(index - 1).location().getY() + offset;
+        }
+        Location loc = hologram.location();
         loc.setY(y);
+
+        if (this instanceof BlockHologramLine) {
+            loc.add(-0.5, 0, -0.5);
+        }
+
         this.location = loc;
-        hologram.getViewers().forEach(viewer -> GlitchHolograms.getNms().sendHologramLineTeleport(viewer, entityId, this));
+
+        if (entity != null) {
+            GlitchHolograms.get().nmsBridge().moveEntity(entity, location);
+            hologram.viewers().forEach(viewer -> GlitchHolograms.get().nmsBridge().sendHologramLineTeleport(viewer, entity));
+        }
+    }
+
+    protected void updateEntityData() {
+        entity.setBillboard(properties().billboard());
+        entity.setViewRange(properties().viewRange());
+        entity.setShadowRadius(properties().shadowRadius());
+        entity.setShadowStrength(properties().shadowStrength());
     }
 
     @AllArgsConstructor
@@ -101,6 +115,10 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
                             .toArray(String[]::new);
                     return new MultiLiteralArgument("value", values);
                 }),
+        VIEW_RANGE(
+                Float.class::cast,
+                1,
+                () -> new FloatArgument("value", 0)),
         SHADOW_RADIUS(
                 Float.class::cast,
                 0,
@@ -108,10 +126,6 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         SHADOW_STRENGTH(
                 Float.class::cast,
                 0,
-                () -> new FloatArgument("value", 0)),
-        VIEW_RANGE(
-                Float.class::cast,
-                1,
                 () -> new FloatArgument("value", 0)),
         ;
 
@@ -128,8 +142,9 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         protected final Map<Property, Object> propertyMap = new HashMap<>();
 
         public PropertiesImpl() {
-            for (Property property : Property.values())
+            for (Property property : Property.values()) {
                 propertyMap.put(property, property.defaultValue);
+            }
         }
 
         protected PropertiesImpl(Map<Property, Object> propertyMap) {
@@ -141,42 +156,42 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         }
 
         @Override
-        public Display.Billboard getBillboard() {
+        public Display.Billboard billboard() {
             return (Display.Billboard) propertyMap.get(Property.BILLBOARD);
         }
 
         @Override
-        public void setBillboard(Display.Billboard billboard) {
+        public void billboard(Display.Billboard billboard) {
             propertyMap.put(Property.BILLBOARD, billboard);
         }
 
         @Override
-        public float getViewRange() {
-            return (float) propertyMap.get(Property.VIEW_RANGE);
+        public float viewRange() {
+            return ((Number) propertyMap.get(Property.VIEW_RANGE)).floatValue();
         }
 
         @Override
-        public void setViewRange(float viewRange) {
+        public void viewRange(float viewRange) {
             propertyMap.put(Property.VIEW_RANGE, viewRange);
         }
 
         @Override
-        public float getShadowRadius() {
-            return (float) propertyMap.get(Property.SHADOW_RADIUS);
+        public float shadowRadius() {
+            return ((Number) propertyMap.get(Property.SHADOW_RADIUS)).floatValue();
         }
 
         @Override
-        public void setShadowRadius(float shadowRadius) {
+        public void shadowRadius(float shadowRadius) {
             propertyMap.put(Property.SHADOW_RADIUS, shadowRadius);
         }
 
         @Override
-        public float getShadowStrength() {
-            return (float) propertyMap.get(Property.SHADOW_STRENGTH);
+        public float shadowStrength() {
+            return ((Number) propertyMap.get(Property.SHADOW_STRENGTH)).floatValue();
         }
 
         @Override
-        public void setShadowStrength(float shadowStrength) {
+        public void shadowStrength(float shadowStrength) {
             propertyMap.put(Property.SHADOW_STRENGTH, shadowStrength);
         }
 

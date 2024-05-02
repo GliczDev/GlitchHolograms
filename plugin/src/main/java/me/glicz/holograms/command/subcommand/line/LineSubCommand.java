@@ -19,7 +19,7 @@ public class LineSubCommand {
         return new LiteralArgument("line")
                 .then(new StringArgument("id")
                         .replaceSuggestions(ArgumentSuggestions.strings((info) ->
-                                GlitchHologramsAPI.get().getRegisteredHologramsKeys().toArray(String[]::new)
+                                GlitchHologramsAPI.get().getRegisteredHologramKeys().toArray(String[]::new)
                         ))
                         .then(new LineAddSubCommand().get())
                         .then(new LineInsertSubCommand().get())

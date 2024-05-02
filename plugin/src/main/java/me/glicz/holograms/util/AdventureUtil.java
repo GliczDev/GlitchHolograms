@@ -14,8 +14,10 @@ import java.util.function.Function;
 public class AdventureUtil {
     private static final Function<Player, TagResolver> placeholderResolver = player ->
             TagResolver.builder().tag("papi", (args, ctx) -> {
-                if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null)
+                if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
                     throw ctx.newException("PlaceholderAPI plugin is not enabled", args);
+                }
+
                 String placeholder = args
                         .popOr("Placeholder value is required")
                         .value();

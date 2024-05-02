@@ -12,13 +12,13 @@ import java.util.function.Consumer;
 @ApiStatus.NonExtendable
 public interface HologramLine<T> {
     @NotNull
-    Type getType();
+    Type type();
 
     @NotNull
-    Location getLocation();
+    Location location();
 
     @NotNull
-    T getContent(@NotNull Player player);
+    T content(@NotNull Player player);
 
     @NotNull
     String getRawContent();
@@ -27,14 +27,14 @@ public interface HologramLine<T> {
     Hologram getHologram();
 
     @NotNull
-    Properties getProperties();
+    Properties properties();
 
-    void setProperties(@NotNull Properties properties);
+    void properties(@NotNull Properties properties);
 
     default void modifyProperties(Consumer<@NotNull Properties> propertiesConsumer) {
-        Properties properties = getProperties();
+        Properties properties = properties();
         propertiesConsumer.accept(properties);
-        setProperties(properties);
+        properties(properties);
     }
 
     void update();
@@ -61,21 +61,21 @@ public interface HologramLine<T> {
 
     @ApiStatus.NonExtendable
     interface Properties {
-        Display.Billboard getBillboard();
+        Display.Billboard billboard();
 
-        void setBillboard(Display.Billboard billboard);
+        void billboard(Display.Billboard billboard);
 
-        float getViewRange();
+        float viewRange();
 
-        void setViewRange(float viewRange);
+        void viewRange(float viewRange);
 
-        float getShadowRadius();
+        float shadowRadius();
 
-        void setShadowRadius(float shadowRadius);
+        void shadowRadius(float shadowRadius);
 
-        float getShadowStrength();
+        float shadowStrength();
 
-        void setShadowStrength(float shadowStrength);
+        void shadowStrength(float shadowStrength);
 
         Properties copy();
     }

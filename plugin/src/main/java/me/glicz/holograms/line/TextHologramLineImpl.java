@@ -4,7 +4,9 @@ import me.glicz.holograms.Hologram;
 import me.glicz.holograms.util.AdventureUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.jetbrains.annotations.NotNull;
 
 public class TextHologramLineImpl extends HologramLineImpl<Component> implements TextHologramLine {
@@ -13,22 +15,34 @@ public class TextHologramLineImpl extends HologramLineImpl<Component> implements
     public TextHologramLineImpl(Hologram hologram, String rawContent, double offset) {
         super(hologram, rawContent, offset);
         this.properties = new PropertiesImpl();
-        this.properties.setBillboard(Display.Billboard.CENTER);
+        this.properties.billboard(Display.Billboard.CENTER);
+        updateEntityData();
     }
 
     @Override
-    public @NotNull Component getContent(@NotNull Player player) {
+    protected ItemDisplay getEntity() {
+        return (ItemDisplay) super.getEntity();
+    }
+
+    @Override
+    protected Class<? extends Display> entityClass() {
+        return TextDisplay.class;
+    }
+
+    @Override
+    public @NotNull Component content(@NotNull Player player) {
         return AdventureUtil.parseMiniMessage(player, rawContent);
     }
 
     @Override
-    public @NotNull Properties getProperties() {
+    public @NotNull Properties properties() {
         return properties.copy();
     }
 
     @Override
-    public void setProperties(@NotNull Properties properties) {
+    public void properties(@NotNull Properties properties) {
         this.properties = properties;
+        updateEntityData();
         update();
     }
 }

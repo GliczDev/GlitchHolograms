@@ -15,11 +15,14 @@ import java.util.function.Consumer;
 @ApiStatus.NonExtendable
 public interface Hologram {
     @NotNull
-    Location getLocation();
+    String id();
+
+    @NotNull
+    Location location();
 
     @NotNull
     @Unmodifiable
-    List<HologramLine<?>> getHologramLines();
+    List<HologramLine<?>> hologramLines();
 
     default TextHologramLine addHologramLine(@NotNull String content) {
         return addHologramLine(TextHologramLine.class, content);
@@ -79,7 +82,7 @@ public interface Hologram {
 
     @NotNull
     @Unmodifiable
-    List<Player> getViewers();
+    List<Player> viewers();
 
     void show(@NotNull Player player);
 
