@@ -1,6 +1,5 @@
 package me.glicz.holograms.loader;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import me.glicz.holograms.GlitchHolograms;
@@ -10,58 +9,62 @@ import me.glicz.holograms.line.HologramLine;
 import me.glicz.holograms.line.HologramLineImpl;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class HologramLoader_v1 extends HologramLoader {
-    protected static void loadLine(GlitchHolograms glitchHolograms, Hologram hologram, Map<?, ?> map) {
-        HologramLine.Type type = Preconditions.checkNotNull(
-                EnumUtils.getEnum(HologramLine.Type.class, String.valueOf(map.get("type"))),
-                "No valid type is present"
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+final class HologramLoader_v1 extends HologramLoader {
+    static final HologramLoader INSTANCE = new HologramLoader_v1();
+
+    @Override
+    void load(String id, CommentedConfigurationNode conf) throws SerializationException {
+        Location location = Objects.requireNonNull(
+                conf.node("location").get(Location.class),
+                "Location is not specified"
         );
-        String content = Preconditions.checkNotNull(
-                String.valueOf(map.get("content")),
-                "No content is present"
-        );
-        double offset = Objects.requireNonNullElse(((Number) map.get("offset")), 0.35).doubleValue();
-        hologram.addHologramLine(type.getHologramLineClass(), content, offset, line -> {
-            HologramLineImpl.PropertiesImpl properties = (HologramLineImpl.PropertiesImpl) line.properties();
-            Objects.requireNonNullElse((Map<?, ?>) map.get("properties"), Map.of()).forEach((key, value) -> {
-                HologramLineImpl.Property property = EnumUtils.getEnumIgnoreCase(HologramLineImpl.Property.class, String.valueOf(key));
-                if (property == null) {
-                    glitchHolograms.getSLF4JLogger().warn("Unknown property: {}", key);
-                    return;
-                }
-                properties.set(property, value);
-            });
-            line.properties(properties);
+        Hologram hologram = GlitchHologramsAPI.get().createHologram(id, location, true);
+
+        List<CommentedConfigurationNode> lines = conf.node("lines").childrenList().reversed();
+        lines.forEach(node -> {
+            try {
+                loadLine(hologram, node);
+            } catch (Exception ex) {
+                GlitchHolograms.get().getSLF4JLogger().atError()
+                        .setCause(ex)
+                        .log("Something went wrong while trying to load line {} in hologram '{}'", lines.indexOf(node), id);
+            }
         });
     }
 
     @Override
-    public void load(GlitchHolograms glitchHolograms, String id, ConfigurationSection section) {
-        Location location = getLocation(Preconditions.checkNotNull(
-                section.getConfigurationSection("location"), "Location is not specified"
-        ));
-        Hologram hologram = GlitchHologramsAPI.get().createHologram(id, location, true);
-        List<Map<?, ?>> lines = section.getMapList("lines");
-        Collections.reverse(lines);
-        lines.forEach(map -> {
-            int lineIndex = lines.indexOf(map);
-            try {
-                loadLine(glitchHolograms, hologram, map);
-            } catch (Exception ex) {
-                glitchHolograms.getSLF4JLogger().atError()
-                        .setCause(ex)
-                        .log("Something went wrong while trying to load line of index {} (counted from the bottom) in hologram '{}'",
-                                lineIndex, id
-                        );
-            }
+    void loadLine(Hologram hologram, CommentedConfigurationNode node) {
+        HologramLine.Type type = Objects.requireNonNull(
+                EnumUtils.getEnumIgnoreCase(HologramLine.Type.class, node.node("type").getString()),
+                "No valid type is present"
+        );
+        String content = Objects.requireNonNull(
+                node.node("content").getString(),
+                "No content is present"
+        );
+        double offset = node.node("offset").getDouble(0.35);
+
+        hologram.addHologramLine(type.getHologramLineClass(), content, offset, line -> {
+            HologramLineImpl.PropertiesImpl properties = (HologramLineImpl.PropertiesImpl) line.properties();
+
+            node.node("properties").childrenMap().forEach((key, value) -> {
+                HologramLineImpl.Property property = EnumUtils.getEnumIgnoreCase(HologramLineImpl.Property.class, String.valueOf(key));
+                if (property == null) {
+                    GlitchHolograms.get().getSLF4JLogger().warn("Unknown property: {}", key);
+                    return;
+                }
+
+                properties.set(property, value.raw());
+            });
+
+            line.properties(properties);
         });
     }
 }

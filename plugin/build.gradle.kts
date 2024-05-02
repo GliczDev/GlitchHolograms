@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+    compileOnly("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT")
     compileOnly("com.mojang:brigadier:1.1.8")
     compileOnly("me.clip:placeholderapi:2.11.3")
     compileOnly("org.projectlombok:lombok:1.18.32")

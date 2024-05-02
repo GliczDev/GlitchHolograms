@@ -53,7 +53,7 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
         Bukkit.getPluginManager().registerEvents(new PlayerJoinQuitListener(), this);
         Bukkit.getPluginManager().registerEvents(new WorldUnloadListener(), this);
 
-        HologramLoader.loadAll(this);
+        HologramLoader.loadAll();
 
         new AsyncHologramUpdateTask().runTaskTimerAsynchronously(this, 20, 20);
 
