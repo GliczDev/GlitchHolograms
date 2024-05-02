@@ -9,7 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class HologramImpl implements Hologram {
@@ -18,7 +20,7 @@ public class HologramImpl implements Hologram {
     private final String id;
     private final Location location;
     private final List<HologramLineImpl<?>> hologramLines = new ArrayList<>();
-    private final List<Player> viewers = new ArrayList<>();
+    private final Set<Player> viewers = new HashSet<>();
     private int updateRange = 48;
 
     public HologramImpl(String id, Location location) {
@@ -95,8 +97,8 @@ public class HologramImpl implements Hologram {
     }
 
     @Override
-    public @NotNull List<Player> viewers() {
-        return List.copyOf(viewers);
+    public @NotNull Set<Player> viewers() {
+        return Set.copyOf(viewers);
     }
 
     @Override

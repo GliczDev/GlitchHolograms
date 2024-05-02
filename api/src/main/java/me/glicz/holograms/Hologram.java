@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Range;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
@@ -84,9 +85,7 @@ public interface Hologram {
 
     boolean removeHologramLine(int index);
 
-    @NotNull
-    @Unmodifiable
-    List<Player> viewers();
+    @NotNull Set<Player> viewers();
 
     void show(@NotNull Player player);
 
