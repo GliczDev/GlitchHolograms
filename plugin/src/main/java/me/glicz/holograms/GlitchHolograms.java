@@ -7,7 +7,8 @@ import lombok.experimental.Accessors;
 import me.glicz.holograms.command.GlitchHologramsCommand;
 import me.glicz.holograms.line.HologramLine;
 import me.glicz.holograms.line.HologramLineImpl;
-import me.glicz.holograms.listener.PlayerJoinQuitListener;
+import me.glicz.holograms.listener.JoinQuitListener;
+import me.glicz.holograms.listener.PlayerChunkLoadListener;
 import me.glicz.holograms.listener.WorldUnloadListener;
 import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.nms.NMSBridge;
@@ -51,7 +52,8 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
         new GlitchHologramsCommand().register();
 
         Bukkit.getServicesManager().register(GlitchHologramsAPI.class, this, this, ServicePriority.Highest);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinQuitListener(), this);
+        Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerChunkLoadListener(), this);
         Bukkit.getPluginManager().registerEvents(new WorldUnloadListener(), this);
 
         HologramLoader.loadAll();

@@ -53,7 +53,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
             throw new IllegalArgumentException(player.getName());
         }
 
-        if (hologram.isInUpdateRange(player)) {
+        if (player.getWorld() == location.getWorld()) {
             GlitchHolograms.get().nmsBridge().sendHologramLine(player, entity, content(player));
         }
     }
