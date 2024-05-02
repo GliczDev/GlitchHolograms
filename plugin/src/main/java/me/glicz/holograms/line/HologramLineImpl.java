@@ -53,7 +53,9 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
             throw new IllegalArgumentException(player.getName());
         }
 
-        GlitchHolograms.get().nmsBridge().sendHologramLine(player, entity, content(player));
+        if (hologram.isInUpdateRange(player)) {
+            GlitchHolograms.get().nmsBridge().sendHologramLine(player, entity, content(player));
+        }
     }
 
     public void hide(@NotNull Player player) {
@@ -72,7 +74,9 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
             throw new IllegalArgumentException(player.getName());
         }
 
-        GlitchHolograms.get().nmsBridge().sendHologramLineData(player, entity, content(player));
+        if (hologram.isInUpdateRange(player)) {
+            GlitchHolograms.get().nmsBridge().sendHologramLineData(player, entity, content(player));
+        }
     }
 
     public void updateLocation() {
@@ -94,7 +98,11 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         if (entity != null) {
             GlitchHolograms.get().nmsBridge().moveEntity(entity, location);
-            hologram.viewers().forEach(viewer -> GlitchHolograms.get().nmsBridge().sendHologramLineTeleport(viewer, entity));
+            hologram.viewers().forEach(viewer -> {
+                if (hologram.isInUpdateRange(viewer)) {
+                    GlitchHolograms.get().nmsBridge().sendHologramLineTeleport(viewer, entity);
+                }
+            });
         }
     }
 

@@ -25,7 +25,11 @@ final class HologramLoader_v1 extends HologramLoader {
                 conf.node("location").get(Location.class),
                 "Location is not specified"
         );
-        Hologram hologram = GlitchHologramsAPI.get().createHologram(id, location, true);
+        Hologram hologram = GlitchHologramsAPI.get().createHologram(id, location, true, holo -> {
+            if (!conf.node("update-range").virtual()) {
+                holo.updateRange(conf.node("update-range").getInt());
+            }
+        });
 
         List<CommentedConfigurationNode> lines = conf.node("lines").childrenList().reversed();
         lines.forEach(node -> {

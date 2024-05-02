@@ -3,7 +3,6 @@ package me.glicz.holograms;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.glicz.holograms.line.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -20,13 +19,28 @@ public class HologramImpl implements Hologram {
     private final Location location;
     private final List<HologramLineImpl<?>> hologramLines = new ArrayList<>();
     private final List<Player> viewers = new ArrayList<>();
+    private int updateRange = 48;
 
     public HologramImpl(String id, Location location) {
         this.id = id;
         this.location = location;
         this.location.setPitch(0);
         this.location.setYaw(Math.round(this.location.getYaw() / 45) * 45);
-        this.viewers.addAll(Bukkit.getOnlinePlayers());
+    }
+
+    @Override
+    public @NotNull Location location() {
+        return location.clone();
+    }
+
+    @Override
+    public int updateRange() {
+        return updateRange;
+    }
+
+    @Override
+    public void updateRange(int updateRange) {
+        this.updateRange = updateRange;
     }
 
     @Override
@@ -81,11 +95,6 @@ public class HologramImpl implements Hologram {
     }
 
     @Override
-    public @NotNull Location location() {
-        return location.clone();
-    }
-
-    @Override
     public @NotNull List<Player> viewers() {
         return List.copyOf(viewers);
     }
@@ -110,5 +119,14 @@ public class HologramImpl implements Hologram {
     @Override
     public void update(@NotNull Player player) {
         hologramLines.forEach(line -> line.update(player));
+    }
+
+    @Override
+    public boolean isInUpdateRange(Player player) {
+        if (player.getWorld() == location.getWorld()) {
+            return player.getLocation().distanceSquared(location) <= updateRange * updateRange;
+        }
+
+        return false;
     }
 }

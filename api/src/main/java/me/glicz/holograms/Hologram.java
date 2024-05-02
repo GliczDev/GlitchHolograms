@@ -20,6 +20,10 @@ public interface Hologram {
     @NotNull
     Location location();
 
+    int updateRange();
+
+    void updateRange(int updateRange);
+
     @NotNull
     @Unmodifiable
     List<HologramLine<?>> hologramLines();
@@ -91,4 +95,6 @@ public interface Hologram {
     void update();
 
     void update(@NotNull Player player);
+
+    boolean isInUpdateRange(Player player);
 }
