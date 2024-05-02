@@ -1,6 +1,7 @@
 package me.glicz.holograms.line;
 
 import me.glicz.holograms.Hologram;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
@@ -65,9 +66,21 @@ public interface HologramLine<T> {
 
         void billboard(Display.Billboard billboard);
 
-        float viewRange();
+        Color glowColorOverride();
 
-        void viewRange(float viewRange);
+        void glowColorOverride(Color glowColorOverride);
+
+        boolean glowing();
+
+        void glowing(boolean glowing);
+
+        float displayHeight();
+
+        void displayHeight(float displayHeight);
+
+        float displayWidth();
+
+        void displayWidth(float displayWidth);
 
         float shadowRadius();
 
@@ -76,6 +89,10 @@ public interface HologramLine<T> {
         float shadowStrength();
 
         void shadowStrength(float shadowStrength);
+
+        float viewRange();
+
+        void viewRange(float viewRange);
 
         Properties copy();
     }

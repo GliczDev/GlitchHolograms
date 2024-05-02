@@ -1,6 +1,7 @@
 package me.glicz.holograms.line;
 
 import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.FloatArgument;
 import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import lombok.AccessLevel;
@@ -8,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
+import me.glicz.holograms.command.argument.ColorArgument;
 import org.apache.commons.lang3.EnumUtils;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
@@ -96,10 +99,15 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
     }
 
     protected void updateEntityData() {
-        entity.setBillboard(properties().billboard());
-        entity.setViewRange(properties().viewRange());
-        entity.setShadowRadius(properties().shadowRadius());
-        entity.setShadowStrength(properties().shadowStrength());
+        Properties properties = properties();
+        entity.setBillboard(properties.billboard());
+        entity.setGlowColorOverride(properties.glowColorOverride());
+        entity.setGlowing(properties.glowing());
+        entity.setDisplayHeight(properties.displayHeight());
+        entity.setDisplayWidth(properties.displayWidth());
+        entity.setShadowRadius(properties.shadowRadius());
+        entity.setShadowStrength(properties.shadowStrength());
+        entity.setViewRange(properties.viewRange());
     }
 
     @AllArgsConstructor
@@ -115,18 +123,34 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
                             .toArray(String[]::new);
                     return new MultiLiteralArgument("value", values);
                 }),
-        VIEW_RANGE(
+        GLOW_COLOR_OVERRIDE(
+                Color.class::cast,
+                null,
+                () -> ColorArgument.colorArgument("value")),
+        GLOWING(
+                Boolean.class::cast,
+                false,
+                () -> new BooleanArgument("value")),
+        DISPLAY_HEIGHT(
                 Float.class::cast,
-                1,
-                () -> new FloatArgument("value", 0)),
+                0F,
+                () -> new FloatArgument("value")),
+        DISPLAY_WIDTH(
+                Float.class::cast,
+                0F,
+                () -> new FloatArgument("value")),
         SHADOW_RADIUS(
                 Float.class::cast,
-                0,
-                () -> new FloatArgument("value", 0, 64)),
+                0F,
+                () -> new FloatArgument("value")),
         SHADOW_STRENGTH(
                 Float.class::cast,
-                0,
-                () -> new FloatArgument("value", 0)),
+                1F,
+                () -> new FloatArgument("value")),
+        VIEW_RANGE(
+                Float.class::cast,
+                1F,
+                () -> new FloatArgument("value")),
         ;
 
         private final Function<Object, Object> converter;
@@ -166,18 +190,48 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         }
 
         @Override
-        public float viewRange() {
-            return ((Number) propertyMap.get(Property.VIEW_RANGE)).floatValue();
+        public Color glowColorOverride() {
+            return (Color) propertyMap.get(Property.GLOW_COLOR_OVERRIDE);
         }
 
         @Override
-        public void viewRange(float viewRange) {
-            propertyMap.put(Property.VIEW_RANGE, viewRange);
+        public void glowColorOverride(Color glowColorOverride) {
+            propertyMap.put(Property.GLOW_COLOR_OVERRIDE, glowColorOverride);
+        }
+
+        @Override
+        public boolean glowing() {
+            return (boolean) propertyMap.get(Property.GLOWING);
+        }
+
+        @Override
+        public void glowing(boolean glowing) {
+            propertyMap.put(Property.GLOWING, glowing);
+        }
+
+        @Override
+        public float displayHeight() {
+            return (float) propertyMap.get(Property.DISPLAY_HEIGHT);
+        }
+
+        @Override
+        public void displayHeight(float displayHeight) {
+            propertyMap.put(Property.DISPLAY_HEIGHT, displayHeight);
+        }
+
+        @Override
+        public float displayWidth() {
+            return (float) propertyMap.get(Property.DISPLAY_WIDTH);
+        }
+
+        @Override
+        public void displayWidth(float displayWidth) {
+            propertyMap.put(Property.DISPLAY_WIDTH, displayWidth);
         }
 
         @Override
         public float shadowRadius() {
-            return ((Number) propertyMap.get(Property.SHADOW_RADIUS)).floatValue();
+            return (float) propertyMap.get(Property.SHADOW_RADIUS);
         }
 
         @Override
@@ -187,12 +241,22 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float shadowStrength() {
-            return ((Number) propertyMap.get(Property.SHADOW_STRENGTH)).floatValue();
+            return (float) propertyMap.get(Property.SHADOW_STRENGTH);
         }
 
         @Override
         public void shadowStrength(float shadowStrength) {
             propertyMap.put(Property.SHADOW_STRENGTH, shadowStrength);
+        }
+
+        @Override
+        public float viewRange() {
+            return (float) propertyMap.get(Property.VIEW_RANGE);
+        }
+
+        @Override
+        public void viewRange(float viewRange) {
+            propertyMap.put(Property.VIEW_RANGE, viewRange);
         }
 
         @Override
