@@ -85,7 +85,8 @@ public interface Hologram {
 
     boolean removeHologramLine(int index);
 
-    @NotNull Set<Player> viewers();
+    @NotNull
+    Set<Player> viewers();
 
     void show(@NotNull Player player);
 

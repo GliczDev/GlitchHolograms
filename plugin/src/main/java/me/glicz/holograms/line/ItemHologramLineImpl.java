@@ -2,6 +2,7 @@ package me.glicz.holograms.line;
 
 import lombok.Getter;
 import me.glicz.holograms.Hologram;
+import me.glicz.holograms.loader.HologramLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
@@ -22,8 +23,8 @@ public class ItemHologramLineImpl extends HologramLineImpl<ItemStack> implements
     }
 
     @Override
-    protected ItemDisplay getEntity() {
-        return (ItemDisplay) super.getEntity();
+    protected ItemDisplay entity() {
+        return (ItemDisplay) super.entity();
     }
 
     @Override
@@ -46,5 +47,6 @@ public class ItemHologramLineImpl extends HologramLineImpl<ItemStack> implements
         this.properties = properties;
         updateEntityData();
         update();
+        HologramLoader.save(hologram);
     }
 }

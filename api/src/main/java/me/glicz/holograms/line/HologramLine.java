@@ -16,16 +16,18 @@ public interface HologramLine<T> {
     Type type();
 
     @NotNull
-    Location location();
-
-    @NotNull
     T content(@NotNull Player player);
 
     @NotNull
-    String getRawContent();
+    String rawContent();
 
     @NotNull
-    Hologram getHologram();
+    Hologram hologram();
+
+    double offset();
+
+    @NotNull
+    Location location();
 
     @NotNull
     Properties properties();

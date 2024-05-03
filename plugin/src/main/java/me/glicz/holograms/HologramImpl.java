@@ -3,6 +3,7 @@ package me.glicz.holograms;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.glicz.holograms.line.*;
+import me.glicz.holograms.loader.HologramLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,8 @@ public class HologramImpl implements Hologram {
         this.location = location;
         this.location.setPitch(0);
         this.location.setYaw(Math.round(this.location.getYaw() / 45) * 45);
+
+        HologramLoader.save(this);
     }
 
     @Override
@@ -43,6 +46,7 @@ public class HologramImpl implements Hologram {
     @Override
     public void updateRange(int updateRange) {
         this.updateRange = updateRange;
+        HologramLoader.save(this);
     }
 
     @Override
@@ -69,6 +73,7 @@ public class HologramImpl implements Hologram {
         modifier.accept((H) hologramLine);
         hologramLines.add(hologramLine);
         viewers.forEach(hologramLine::show);
+        HologramLoader.save(this);
         return (H) hologramLine;
     }
 
@@ -84,6 +89,7 @@ public class HologramImpl implements Hologram {
         }
         hologramLines.forEach(HologramLineImpl::updateLocation);
         viewers.forEach(hologramLine::show);
+        HologramLoader.save(this);
         return (H) hologramLine;
     }
 
@@ -93,6 +99,7 @@ public class HologramImpl implements Hologram {
         viewers.forEach(viewer -> hologramLines.get(index).hide(viewer));
         hologramLines.remove(index);
         hologramLines.forEach(HologramLineImpl::updateLocation);
+        HologramLoader.save(this);
         return true;
     }
 

@@ -1,6 +1,7 @@
 package me.glicz.holograms.line;
 
 import me.glicz.holograms.Hologram;
+import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.util.AdventureUtil;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Display;
@@ -19,8 +20,8 @@ public class TextHologramLineImpl extends HologramLineImpl<Component> implements
     }
 
     @Override
-    protected TextDisplay getEntity() {
-        return (TextDisplay) super.getEntity();
+    protected TextDisplay entity() {
+        return (TextDisplay) super.entity();
     }
 
     @Override
@@ -43,5 +44,6 @@ public class TextHologramLineImpl extends HologramLineImpl<Component> implements
         this.properties = properties;
         updateEntityData();
         update();
+        HologramLoader.save(hologram);
     }
 }

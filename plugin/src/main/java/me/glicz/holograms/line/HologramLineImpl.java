@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
 import me.glicz.holograms.command.argument.ColorArgument;
@@ -24,6 +25,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Getter
+@Accessors(fluent = true)
 public abstract class HologramLineImpl<T> implements HologramLine<T> {
     protected final String rawContent;
     protected final Hologram hologram;
@@ -121,6 +123,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
     @AllArgsConstructor
     public enum Property {
         BILLBOARD(
+                billboard -> ((Display.Billboard) billboard).name(),
                 rawValue -> EnumUtils.getEnumIgnoreCase(
                         Display.Billboard.class, String.valueOf(rawValue), Display.Billboard.FIXED
                 ),
@@ -132,36 +135,49 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
                     return new MultiLiteralArgument("value", values);
                 }),
         GLOW_COLOR_OVERRIDE(
-                Color.class::cast,
+                color -> Integer.toHexString(((Color) color).asARGB()),
+                rawValue -> {
+                    if (rawValue instanceof Color color) {
+                        return color;
+                    }
+
+                    return Color.fromARGB(Integer.parseInt(String.valueOf(rawValue)));
+                },
                 null,
                 () -> ColorArgument.colorArgument("value")),
         GLOWING(
+                Function.identity(),
                 Boolean.class::cast,
                 false,
                 () -> new BooleanArgument("value")),
         DISPLAY_HEIGHT(
-                Float.class::cast,
+                Function.identity(),
+                rawValue -> ((Number) rawValue).floatValue(),
                 0F,
                 () -> new FloatArgument("value")),
         DISPLAY_WIDTH(
-                Float.class::cast,
+                Function.identity(),
+                rawValue -> ((Number) rawValue).floatValue(),
                 0F,
                 () -> new FloatArgument("value")),
         SHADOW_RADIUS(
-                Float.class::cast,
+                Function.identity(),
+                rawValue -> ((Number) rawValue).floatValue(),
                 0F,
                 () -> new FloatArgument("value")),
         SHADOW_STRENGTH(
-                Float.class::cast,
+                Function.identity(),
+                rawValue -> ((Number) rawValue).floatValue(),
                 1F,
                 () -> new FloatArgument("value")),
         VIEW_RANGE(
-                Float.class::cast,
+                Function.identity(),
+                rawValue -> ((Number) rawValue).floatValue(),
                 1F,
                 () -> new FloatArgument("value")),
         ;
 
-        private final Function<Object, Object> converter;
+        private final Function<Object, Object> serializer, deserializer;
         private final Object defaultValue;
         private final Supplier<Argument<?>> argumentSupplier;
 
@@ -183,8 +199,13 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
             this.propertyMap.putAll(propertyMap);
         }
 
+        public Object get(Property property) {
+            Object o = propertyMap.get(property);
+            return o != null && !o.equals(property.defaultValue) ? property.serializer.apply(o) : null;
+        }
+
         public void set(Property property, Object rawValue) {
-            propertyMap.put(property, property.converter.apply(rawValue));
+            propertyMap.put(property, property.deserializer.apply(rawValue));
         }
 
         @Override

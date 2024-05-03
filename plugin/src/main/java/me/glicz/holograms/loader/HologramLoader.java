@@ -2,15 +2,22 @@ package me.glicz.holograms.loader;
 
 import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
+import me.glicz.holograms.line.HologramLine;
+import me.glicz.holograms.line.HologramLineImpl;
+import me.glicz.holograms.task.AsyncFileSaveTask;
 import me.glicz.holograms.util.configurate.LocationSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 
 public abstract sealed class HologramLoader permits HologramLoader_v1 {
+    private static final int LATEST_LOADER_VERSION = 1;
+
     private static File[] hologramFiles() {
         File hologramsDir = new File(GlitchHolograms.get().getDataFolder(), "holograms");
         if (!hologramsDir.exists() && !hologramsDir.mkdirs()) {
@@ -63,6 +70,40 @@ public abstract sealed class HologramLoader permits HologramLoader_v1 {
                         .log("Something went wrong while trying to load hologram '{}'", id);
             }
         }
+    }
+
+    public static void save(Hologram hologram) {
+        Bukkit.getScheduler().runTaskAsynchronously(GlitchHolograms.get(), () -> {
+            try {
+                ConfigurationOptions options = ConfigurationOptions.defaults().serializers(builder -> builder
+                        .register(Location.class, LocationSerializer.INSTANCE)
+                );
+                CommentedConfigurationNode conf = CommentedConfigurationNode.root(options);
+
+                conf.node("_version").set(LATEST_LOADER_VERSION);
+                conf.node("location").set(hologram.location());
+                conf.node("update-range").set(hologram.updateRange());
+
+                for (HologramLine<?> line : hologram.hologramLines().reversed()) {
+                    CommentedConfigurationNode node = conf.node("lines").appendListNode();
+
+                    node.node("type").set(line.type().name());
+                    node.node("content").set(line.rawContent());
+                    node.node("offset").set(line.offset());
+
+                    HologramLineImpl.PropertiesImpl properties = (HologramLineImpl.PropertiesImpl) line.properties();
+                    for (HologramLineImpl.Property property : HologramLineImpl.Property.values()) {
+                        node.node("properties").node(property.name()).set(properties.get(property));
+                    }
+                }
+
+                AsyncFileSaveTask.save(new File(GlitchHolograms.get().getDataFolder(), "holograms/" + hologram.id() + ".yml"), conf);
+            } catch (Exception ex) {
+                GlitchHolograms.get().getSLF4JLogger().atError()
+                        .setCause(ex)
+                        .log("Something went wrong while trying to save hologram '{}'", hologram.id());
+            }
+        });
     }
 
     abstract void load(String id, CommentedConfigurationNode conf) throws SerializationException;

@@ -13,6 +13,7 @@ import me.glicz.holograms.listener.WorldUnloadListener;
 import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.nms.NMSBridge;
 import me.glicz.holograms.nms.NMSBridgeImpl;
+import me.glicz.holograms.task.AsyncFileSaveTask;
 import me.glicz.holograms.task.AsyncHologramUpdateTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -58,6 +59,7 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
 
         HologramLoader.loadAll();
 
+        new AsyncFileSaveTask().runTaskTimerAsynchronously(this, 5 * 60 * 20, 5 * 60 * 20);
         new AsyncHologramUpdateTask().runTaskTimerAsynchronously(this, 20, 20);
 
         getLogger().info("Successfully enabled!");
@@ -65,6 +67,7 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
 
     @Override
     public void onDisable() {
+        AsyncFileSaveTask.saveAll();
         getLogger().info("Successfully disabled!");
     }
 
