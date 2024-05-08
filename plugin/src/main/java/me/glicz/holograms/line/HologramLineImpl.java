@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.MultiLiteralArgument;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
@@ -186,14 +187,9 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         }
     }
 
+    @NoArgsConstructor
     public static class PropertiesImpl implements Properties {
         protected final Map<Property, Object> propertyMap = new HashMap<>();
-
-        public PropertiesImpl() {
-            for (Property property : Property.values()) {
-                propertyMap.put(property, property.defaultValue);
-            }
-        }
 
         protected PropertiesImpl(Map<Property, Object> propertyMap) {
             this.propertyMap.putAll(propertyMap);
@@ -201,7 +197,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         public Object get(Property property) {
             Object o = propertyMap.get(property);
-            return o != null && !o.equals(property.defaultValue) ? property.serializer.apply(o) : null;
+            return o != null ? property.serializer.apply(o) : null;
         }
 
         public void set(Property property, Object rawValue) {
@@ -210,7 +206,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public Display.Billboard billboard() {
-            return (Display.Billboard) propertyMap.get(Property.BILLBOARD);
+            return (Display.Billboard) propertyMap.getOrDefault(Property.BILLBOARD, Property.BILLBOARD.defaultValue);
         }
 
         @Override
@@ -220,7 +216,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public Color glowColorOverride() {
-            return (Color) propertyMap.get(Property.GLOW_COLOR_OVERRIDE);
+            return (Color) propertyMap.getOrDefault(Property.GLOW_COLOR_OVERRIDE, Property.GLOW_COLOR_OVERRIDE.defaultValue);
         }
 
         @Override
@@ -230,7 +226,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public boolean glowing() {
-            return (boolean) propertyMap.get(Property.GLOWING);
+            return (boolean) propertyMap.getOrDefault(Property.GLOWING, Property.GLOWING.defaultValue);
         }
 
         @Override
@@ -240,7 +236,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float displayHeight() {
-            return (float) propertyMap.get(Property.DISPLAY_HEIGHT);
+            return (float) propertyMap.getOrDefault(Property.DISPLAY_HEIGHT, Property.DISPLAY_HEIGHT.defaultValue);
         }
 
         @Override
@@ -250,7 +246,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float displayWidth() {
-            return (float) propertyMap.get(Property.DISPLAY_WIDTH);
+            return (float) propertyMap.getOrDefault(Property.DISPLAY_WIDTH, Property.DISPLAY_WIDTH.defaultValue);
         }
 
         @Override
@@ -260,7 +256,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float shadowRadius() {
-            return (float) propertyMap.get(Property.SHADOW_RADIUS);
+            return (float) propertyMap.getOrDefault(Property.SHADOW_RADIUS, Property.SHADOW_RADIUS.defaultValue);
         }
 
         @Override
@@ -270,7 +266,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float shadowStrength() {
-            return (float) propertyMap.get(Property.SHADOW_STRENGTH);
+            return (float) propertyMap.getOrDefault(Property.SHADOW_STRENGTH, Property.SHADOW_STRENGTH.defaultValue);
         }
 
         @Override
@@ -280,7 +276,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float viewRange() {
-            return (float) propertyMap.get(Property.VIEW_RANGE);
+            return (float) propertyMap.getOrDefault(Property.VIEW_RANGE, Property.VIEW_RANGE.defaultValue);
         }
 
         @Override
