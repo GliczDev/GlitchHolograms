@@ -1,5 +1,6 @@
 package me.glicz.holograms.util;
 
+import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
+@UtilityClass
 public class AdventureUtil {
     private static final Function<Player, TagResolver> placeholderResolver = player ->
             TagResolver.builder().tag("papi", (args, ctx) -> {
