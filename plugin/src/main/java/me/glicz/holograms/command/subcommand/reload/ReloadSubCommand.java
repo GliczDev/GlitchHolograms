@@ -7,6 +7,7 @@ import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.command.subcommand.SubCommand;
 import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.message.MessageKey;
+import me.glicz.holograms.task.AsyncFileSaveTask;
 import org.bukkit.entity.Player;
 
 public class ReloadSubCommand implements SubCommand {
@@ -20,6 +21,8 @@ public class ReloadSubCommand implements SubCommand {
     public void execute(Player sender, CommandArguments args) {
         GlitchHolograms.get().reloadConfig();
         GlitchHolograms.get().reloadMessageProvider();
+
+        AsyncFileSaveTask.saveAll();
         GlitchHolograms.get().getRegisteredHolograms().forEach(hologram -> {
             if (hologram.shouldSave()) {
                 GlitchHolograms.get().removeHologram(hologram.id());
