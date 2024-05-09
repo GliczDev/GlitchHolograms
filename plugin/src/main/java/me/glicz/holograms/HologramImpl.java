@@ -33,8 +33,6 @@ public class HologramImpl implements Hologram {
         this.location.setYaw(Math.round(this.location.getYaw() / 45) * 45);
         this.shouldSave = shouldSave;
         this.updateRange = GlitchHolograms.get().config().defaults().updateRange();
-
-        HologramLoader.save(this);
     }
 
     @Override
