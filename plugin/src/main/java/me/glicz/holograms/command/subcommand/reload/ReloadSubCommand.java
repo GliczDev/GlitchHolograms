@@ -5,6 +5,7 @@ import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.command.subcommand.SubCommand;
+import me.glicz.holograms.loader.HologramLoader;
 import me.glicz.holograms.message.MessageKey;
 import org.bukkit.entity.Player;
 
@@ -19,6 +20,12 @@ public class ReloadSubCommand implements SubCommand {
     public void execute(Player sender, CommandArguments args) {
         GlitchHolograms.get().reloadConfig();
         GlitchHolograms.get().reloadMessageProvider();
+        GlitchHolograms.get().getRegisteredHolograms().forEach(hologram -> {
+            if (hologram.shouldSave()) {
+                GlitchHolograms.get().removeHologram(hologram.id());
+            }
+        });
+        HologramLoader.loadAll();
 
         sender.sendMessage(GlitchHolograms.get().messageProvider().get(MessageKey.COMMAND_RELOAD));
     }
