@@ -102,7 +102,7 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
             throw new IllegalArgumentException("Hologram with id %s already exists!".formatted(id));
         }
 
-        Hologram hologram = new HologramImpl(id, location);
+        Hologram hologram = new HologramImpl(id, location, save);
         modifier.accept(hologram);
         registeredHolograms.put(id, hologram);
         Bukkit.getOnlinePlayers().forEach(hologram::show);

@@ -73,6 +73,7 @@ public abstract sealed class HologramLoader permits HologramLoader_v1 {
     }
 
     public static void save(Hologram hologram) {
+        if (!hologram.shouldSave()) return;
         Bukkit.getScheduler().runTaskAsynchronously(GlitchHolograms.get(), () -> {
             try {
                 ConfigurationOptions options = ConfigurationOptions.defaults().serializers(builder -> builder

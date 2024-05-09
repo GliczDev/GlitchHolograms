@@ -21,6 +21,8 @@ public interface Hologram {
     @NotNull
     Location location();
 
+    boolean shouldSave();
+
     int updateRange();
 
     void updateRange(int updateRange);

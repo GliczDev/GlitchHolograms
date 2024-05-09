@@ -15,20 +15,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+@Accessors(fluent = true)
 public class HologramImpl implements Hologram {
     @Getter
-    @Accessors(fluent = true)
     private final String id;
     private final Location location;
+    @Getter
+    private final boolean shouldSave;
     private final List<HologramLineImpl<?>> hologramLines = new ArrayList<>();
     private final Set<Player> viewers = new HashSet<>();
     private int updateRange;
 
-    public HologramImpl(String id, Location location) {
+    public HologramImpl(String id, Location location, boolean shouldSave) {
         this.id = id;
         this.location = location;
         this.location.setPitch(0);
         this.location.setYaw(Math.round(this.location.getYaw() / 45) * 45);
+        this.shouldSave = shouldSave;
         this.updateRange = GlitchHolograms.get().config().defaults().updateRange();
 
         HologramLoader.save(this);
