@@ -2,10 +2,12 @@ package me.glicz.holograms.command.subcommand.line;
 
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.executors.CommandArguments;
-import me.glicz.holograms.GlitchHologramsAPI;
+import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.command.argument.MiniMessageArgument;
 import me.glicz.holograms.command.subcommand.SubCommand;
 import me.glicz.holograms.line.HologramLine;
+import me.glicz.holograms.message.MessageKey;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.entity.Player;
 
@@ -35,16 +37,23 @@ class LineAddSubCommand implements SubCommand {
 
     @Override
     public void execute(Player sender, CommandArguments args) {
-        GlitchHologramsAPI.get().getHologram(args.getUnchecked("id")).ifPresentOrElse(
+        String id = args.getUnchecked("id");
+        GlitchHolograms.get().getHologram(id).ifPresentOrElse(
                 hologram -> {
                     HologramLine.Type type = EnumUtils.getEnumIgnoreCase(HologramLine.Type.class, args.getUnchecked("type"));
                     String content = LineSubCommand.getLineContent(type, args);
                     double offset = args.getOrDefaultUnchecked("offset", 0.35);
                     hologram.addHologramLine(type, content, offset);
+
+                    sender.sendMessage(GlitchHolograms.get().messageProvider().get(
+                            MessageKey.COMMAND_LINE_ADD,
+                            Placeholder.parsed("id", String.valueOf(id))
+                    ));
                 },
-                () -> {
-                    // doesn't exist :(
-                }
+                () -> sender.sendMessage(GlitchHolograms.get().messageProvider().get(
+                        MessageKey.COMMAND_ERROR_UNKNOWN_HOLOGRAM,
+                        Placeholder.parsed("id", String.valueOf(id))
+                ))
         );
     }
 }

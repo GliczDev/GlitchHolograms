@@ -34,11 +34,11 @@ public interface Hologram {
     }
 
     default HologramLine<?> addHologramLine(HologramLine.@NotNull Type lineType, @NotNull String content) {
-        return addHologramLine(lineType, content, 0.35);
+        return addHologramLine(lineType, content, GlitchHologramsAPI.get().config().defaults().lineOffset());
     }
 
     default <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content) {
-        return addHologramLine(clazz, content, 0.35);
+        return addHologramLine(clazz, content, GlitchHologramsAPI.get().config().defaults().lineOffset());
     }
 
     default HologramLine<?> addHologramLine(HologramLine.@NotNull Type lineType, @NotNull String content, double offset) {
@@ -51,7 +51,7 @@ public interface Hologram {
     }
 
     default <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, @NotNull Consumer<H> modifier) {
-        return addHologramLine(clazz, content, 0.35, modifier);
+        return addHologramLine(clazz, content, GlitchHologramsAPI.get().config().defaults().lineOffset(), modifier);
     }
 
     <H extends HologramLine<T>, T> H addHologramLine(@NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier);
@@ -61,11 +61,11 @@ public interface Hologram {
     }
 
     default HologramLine<?> insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, HologramLine.@NotNull Type lineType, @NotNull String content) {
-        return insertHologramLine(index, lineType, content, 0.35);
+        return insertHologramLine(index, lineType, content, GlitchHologramsAPI.get().config().defaults().lineOffset());
     }
 
     default <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content) {
-        return insertHologramLine(index, clazz, content, 0.35);
+        return insertHologramLine(index, clazz, content, GlitchHologramsAPI.get().config().defaults().lineOffset());
     }
 
     default HologramLine<?> insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, HologramLine.@NotNull Type lineType, @NotNull String content, double offset) {
@@ -78,7 +78,7 @@ public interface Hologram {
     }
 
     default <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, @NotNull Consumer<H> modifier) {
-        return insertHologramLine(index, clazz, content, 0.35, modifier);
+        return insertHologramLine(index, clazz, content, GlitchHologramsAPI.get().config().defaults().lineOffset(), modifier);
     }
 
     <H extends HologramLine<T>, T> H insertHologramLine(@Range(from = 0, to = Integer.MAX_VALUE) int index, @NotNull Class<H> clazz, @NotNull String content, double offset, @NotNull Consumer<H> modifier);

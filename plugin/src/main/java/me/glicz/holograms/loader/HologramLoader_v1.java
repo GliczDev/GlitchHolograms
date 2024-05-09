@@ -53,7 +53,7 @@ final class HologramLoader_v1 extends HologramLoader {
                 node.node("content").getString(),
                 "No content is present"
         );
-        double offset = node.node("offset").getDouble(0.35);
+        double offset = node.node("offset").getDouble(GlitchHolograms.get().config().defaults().lineOffset());
 
         hologram.addHologramLine(type.getHologramLineClass(), content, offset, line -> {
             HologramLineImpl.PropertiesImpl properties = (HologramLineImpl.PropertiesImpl) line.properties();

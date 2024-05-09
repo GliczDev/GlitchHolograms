@@ -5,30 +5,38 @@ import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.glicz.holograms.command.GlitchHologramsCommand;
+import me.glicz.holograms.config.Config;
+import me.glicz.holograms.config.ConfigLoader;
 import me.glicz.holograms.line.HologramLine;
 import me.glicz.holograms.line.HologramLineImpl;
 import me.glicz.holograms.listener.JoinQuitListener;
 import me.glicz.holograms.listener.PlayerChunkLoadListener;
 import me.glicz.holograms.listener.WorldUnloadListener;
 import me.glicz.holograms.loader.HologramLoader;
+import me.glicz.holograms.message.MessageProvider;
+import me.glicz.holograms.message.MessageProviderLoader;
 import me.glicz.holograms.nms.NMSBridge;
 import me.glicz.holograms.nms.NMSBridgeImpl;
 import me.glicz.holograms.task.AsyncFileSaveTask;
 import me.glicz.holograms.task.AsyncHologramUpdateTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 import java.util.function.Consumer;
 
+@Getter
+@Accessors(fluent = true)
 public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     private final Map<String, Hologram> registeredHolograms = new HashMap<>();
-    @Getter
-    @Accessors(fluent = true)
+    private Config config;
+    private MessageProvider messageProvider;
     private NMSBridge nmsBridge;
 
     public static GlitchHolograms get() {
@@ -48,11 +56,13 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     public void onEnable() {
         CommandAPI.onEnable();
 
+        Bukkit.getServicesManager().register(GlitchHologramsAPI.class, this, this, ServicePriority.Highest);
+
+        reloadConfig();
+        reloadMessageProvider();
         this.nmsBridge = new NMSBridgeImpl();
 
         new GlitchHologramsCommand().register();
-
-        Bukkit.getServicesManager().register(GlitchHologramsAPI.class, this, this, ServicePriority.Highest);
         Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerChunkLoadListener(), this);
         Bukkit.getPluginManager().registerEvents(new WorldUnloadListener(), this);
@@ -69,6 +79,21 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     public void onDisable() {
         AsyncFileSaveTask.saveAll();
         getLogger().info("Successfully disabled!");
+    }
+
+    @Override
+    @Contract("-> fail")
+    public @NotNull FileConfiguration getConfig() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void reloadConfig() {
+        config = ConfigLoader.load();
+    }
+
+    public void reloadMessageProvider() {
+        messageProvider = MessageProviderLoader.load();
     }
 
     @Override

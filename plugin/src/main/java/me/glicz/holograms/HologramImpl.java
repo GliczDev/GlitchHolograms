@@ -22,13 +22,14 @@ public class HologramImpl implements Hologram {
     private final Location location;
     private final List<HologramLineImpl<?>> hologramLines = new ArrayList<>();
     private final Set<Player> viewers = new HashSet<>();
-    private int updateRange = 48;
+    private int updateRange;
 
     public HologramImpl(String id, Location location) {
         this.id = id;
         this.location = location;
         this.location.setPitch(0);
         this.location.setYaw(Math.round(this.location.getYaw() / 45) * 45);
+        this.updateRange = GlitchHolograms.get().config().defaults().updateRange();
 
         HologramLoader.save(this);
     }

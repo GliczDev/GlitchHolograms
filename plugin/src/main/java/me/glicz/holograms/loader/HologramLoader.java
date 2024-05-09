@@ -93,7 +93,7 @@ public abstract sealed class HologramLoader permits HologramLoader_v1 {
 
                     HologramLineImpl.PropertiesImpl properties = (HologramLineImpl.PropertiesImpl) line.properties();
                     for (HologramLineImpl.Property property : HologramLineImpl.Property.values()) {
-                        node.node("properties").node(property.name()).set(properties.get(property));
+                        node.node("properties").node(property.name()).set(properties.getSerialized(property));
                     }
                 }
 

@@ -2,8 +2,9 @@ package me.glicz.holograms.command;
 
 import dev.jorel.commandapi.CommandTree;
 import me.glicz.holograms.command.subcommand.create.CreateSubCommand;
+import me.glicz.holograms.command.subcommand.delete.DeleteSubCommand;
 import me.glicz.holograms.command.subcommand.line.LineSubCommand;
-import me.glicz.holograms.command.subcommand.remove.RemoveSubCommand;
+import me.glicz.holograms.command.subcommand.reload.ReloadSubCommand;
 
 public class GlitchHologramsCommand implements Command {
     @Override
@@ -12,8 +13,9 @@ public class GlitchHologramsCommand implements Command {
                 .withAliases("gholograms", "gholo", "gh")
                 .withPermission("glitchholograms.command")
                 .then(new CreateSubCommand().get())
+                .then(new DeleteSubCommand().get())
                 .then(new LineSubCommand().get())
-                .then(new RemoveSubCommand().get())
+                .then(new ReloadSubCommand().get())
                 .register();
     }
 }

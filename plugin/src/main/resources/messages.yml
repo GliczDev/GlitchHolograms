@@ -1,0 +1,14 @@
+placeholders:
+  prefix: <#E08855>GlitchHolograms <dark_gray>» <white>
+command:
+  error:
+    unknown-hologram: <prefix>Hologram <#E08855><id></#E08855> doesn't exist
+    invalid-line: <prefix>Hologram <#E08855><id></#E08855> doesn't have a line of index <#E08855><index></#E08855>
+  create: <prefix>Successfully created hologram <#E08855><id></#E08855>
+  delete: <prefix>Successfully deleted hologram <#E08855><id></#E08855>
+  line:
+    add: <prefix>Successfully added a new line to hologram <#E08855><id></#E08855>
+    insert: <prefix>Successfully inserted line at index <#E08855><index></#E08855> in hologram <#E08855><id></#E08855>
+    modify: <prefix>Successfully set <#E08855><property></#E08855> to <#E08855><value></#E08855> in line at index <#E08855><index></#E08855> in hologram <#E08855><id></#E08855>
+    remove: <prefix>Successfully removed line at index <#E08855><index></#E08855> in hologram <#E08855><id></#E08855>
+  reload: <prefix>Successfully reloaded

@@ -1,5 +1,6 @@
 package me.glicz.holograms;
 
+import me.glicz.holograms.config.Config;
 import me.glicz.holograms.line.HologramLine;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,6 +25,9 @@ public interface GlitchHologramsAPI {
         }
         return provider.getProvider();
     }
+
+    @NotNull
+    Config config();
 
     @NotNull
     default Hologram createHologram(@NotNull String id, @NotNull Location location) {
