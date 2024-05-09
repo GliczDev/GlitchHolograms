@@ -196,6 +196,14 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         }
 
         public Object get(Property property) {
+            return propertyMap.get(property);
+        }
+
+        public Object getOrDefault(Property property) {
+            return propertyMap.getOrDefault(property, property.defaultValue);
+        }
+
+        public Object getSerialized(Property property) {
             Object o = propertyMap.get(property);
             return o != null ? property.serializer.apply(o) : null;
         }
@@ -206,7 +214,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public Display.Billboard billboard() {
-            return (Display.Billboard) propertyMap.getOrDefault(Property.BILLBOARD, Property.BILLBOARD.defaultValue);
+            return (Display.Billboard) getOrDefault(Property.BILLBOARD);
         }
 
         @Override
@@ -216,7 +224,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public Color glowColorOverride() {
-            return (Color) propertyMap.getOrDefault(Property.GLOW_COLOR_OVERRIDE, Property.GLOW_COLOR_OVERRIDE.defaultValue);
+            return (Color) getOrDefault(Property.GLOW_COLOR_OVERRIDE);
         }
 
         @Override
@@ -226,7 +234,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public boolean glowing() {
-            return (boolean) propertyMap.getOrDefault(Property.GLOWING, Property.GLOWING.defaultValue);
+            return (boolean) getOrDefault(Property.GLOWING);
         }
 
         @Override
@@ -236,7 +244,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float displayHeight() {
-            return (float) propertyMap.getOrDefault(Property.DISPLAY_HEIGHT, Property.DISPLAY_HEIGHT.defaultValue);
+            return (float) getOrDefault(Property.DISPLAY_HEIGHT);
         }
 
         @Override
@@ -246,7 +254,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float displayWidth() {
-            return (float) propertyMap.getOrDefault(Property.DISPLAY_WIDTH, Property.DISPLAY_WIDTH.defaultValue);
+            return (float) getOrDefault(Property.DISPLAY_WIDTH);
         }
 
         @Override
@@ -256,7 +264,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float shadowRadius() {
-            return (float) propertyMap.getOrDefault(Property.SHADOW_RADIUS, Property.SHADOW_RADIUS.defaultValue);
+            return (float) getOrDefault(Property.SHADOW_RADIUS);
         }
 
         @Override
@@ -266,7 +274,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float shadowStrength() {
-            return (float) propertyMap.getOrDefault(Property.SHADOW_STRENGTH, Property.SHADOW_STRENGTH.defaultValue);
+            return (float) getOrDefault(Property.SHADOW_STRENGTH);
         }
 
         @Override
@@ -276,7 +284,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
 
         @Override
         public float viewRange() {
-            return (float) propertyMap.getOrDefault(Property.VIEW_RANGE, Property.VIEW_RANGE.defaultValue);
+            return (float) getOrDefault(Property.VIEW_RANGE);
         }
 
         @Override

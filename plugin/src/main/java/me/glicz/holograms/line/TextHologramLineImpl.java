@@ -15,7 +15,9 @@ public class TextHologramLineImpl extends HologramLineImpl<Component> implements
     public TextHologramLineImpl(Hologram hologram, String rawContent, double offset) {
         super(hologram, rawContent, offset);
         this.properties = new PropertiesImpl();
-        this.properties.billboard(Display.Billboard.CENTER);
+        if (((PropertiesImpl) properties).get(Property.BILLBOARD) == null) {
+            this.properties.billboard(Display.Billboard.CENTER);
+        }
         updateEntityData();
     }
 
