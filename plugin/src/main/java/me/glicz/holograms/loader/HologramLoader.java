@@ -70,6 +70,7 @@ public abstract sealed class HologramLoader permits HologramLoader_v1 {
                         .log("Something went wrong while trying to load hologram '{}'", id);
             }
         }
+        AsyncFileSaveTask.saveAll();
     }
 
     public static void save(Hologram hologram) {
