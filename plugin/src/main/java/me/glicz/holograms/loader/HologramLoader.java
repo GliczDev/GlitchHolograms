@@ -70,7 +70,7 @@ public abstract sealed class HologramLoader permits HologramLoader_v1 {
                         .log("Something went wrong while trying to load hologram '{}'", id);
             }
         }
-        AsyncFileSaveTask.saveAll();
+        Bukkit.getScheduler().runTaskLaterAsynchronously(GlitchHolograms.get(), AsyncFileSaveTask::saveAll, 1);
     }
 
     public static void save(Hologram hologram) {
