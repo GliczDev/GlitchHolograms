@@ -17,7 +17,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.32")
     implementation(project(":api"))
     implementation(project(":nms"))
-    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.4.0")
+    implementation("dev.jorel:commandapi-bukkit-shade-mojang-mapped:9.5.0-SNAPSHOT")
 }
 
 tasks {

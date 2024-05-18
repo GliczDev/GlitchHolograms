@@ -47,7 +47,6 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     public void onLoad() {
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this)
                 .silentLogs(true)
-                .useMojangMappings(true)
                 .usePluginNamespace()
         );
     }
