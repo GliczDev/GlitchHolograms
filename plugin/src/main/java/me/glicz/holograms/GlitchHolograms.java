@@ -1,7 +1,6 @@
 package me.glicz.holograms;
 
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import me.glicz.holograms.command.GlitchHologramsCommand;
@@ -44,24 +43,17 @@ public class GlitchHolograms extends JavaPlugin implements GlitchHologramsAPI {
     }
 
     @Override
-    public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this)
-                .silentLogs(true)
-                .usePluginNamespace()
-        );
-    }
-
-    @Override
     public void onEnable() {
-        CommandAPI.onEnable();
-
         Bukkit.getServicesManager().register(GlitchHologramsAPI.class, this, this, ServicePriority.Highest);
 
         reloadConfig();
         reloadMessageProvider();
         this.nmsBridge = new NMSBridgeImpl();
 
-        new GlitchHologramsCommand().register();
+        //noinspection UnstableApiUsage
+        getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, e ->
+                new GlitchHologramsCommand().register(e.registrar())
+        );
         Bukkit.getPluginManager().registerEvents(new JoinQuitListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerChunkLoadListener(), this);
         Bukkit.getPluginManager().registerEvents(new WorldUnloadListener(), this);

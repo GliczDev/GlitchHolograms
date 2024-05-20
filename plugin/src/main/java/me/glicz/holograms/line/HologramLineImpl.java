@@ -1,9 +1,10 @@
 package me.glicz.holograms.line;
 
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.BooleanArgument;
-import dev.jorel.commandapi.arguments.FloatArgument;
-import dev.jorel.commandapi.arguments.MultiLiteralArgument;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import me.glicz.holograms.GlitchHolograms;
 import me.glicz.holograms.Hologram;
-import me.glicz.holograms.command.argument.ColorArgument;
+import me.glicz.holograms.command.argument.ColorArgumentType;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -19,11 +20,12 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static io.papermc.paper.command.brigadier.Commands.argument;
 
 @Getter
 @Accessors(fluent = true)
@@ -121,6 +123,7 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
         entity.setViewRange(properties.viewRange());
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @AllArgsConstructor
     public enum Property {
         BILLBOARD(
@@ -129,12 +132,13 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
                         Display.Billboard.class, String.valueOf(rawValue), Display.Billboard.FIXED
                 ),
                 Display.Billboard.FIXED,
-                () -> {
-                    String[] values = Arrays.stream(Display.Billboard.values())
-                            .map(billboard -> billboard.name().toLowerCase())
-                            .toArray(String[]::new);
-                    return new MultiLiteralArgument("value", values);
-                }),
+                () -> argument("value", StringArgumentType.word())
+                        .suggests((ctx, builder) -> {
+                            for (Display.Billboard billboard : Display.Billboard.values()) {
+                                builder.suggest(billboard.name().toLowerCase());
+                            }
+                            return builder.buildFuture();
+                        })),
         GLOW_COLOR_OVERRIDE(
                 color -> Integer.toHexString(((Color) color).asARGB()),
                 rawValue -> {
@@ -145,44 +149,44 @@ public abstract class HologramLineImpl<T> implements HologramLine<T> {
                     return Color.fromARGB(Integer.parseInt(String.valueOf(rawValue)));
                 },
                 null,
-                () -> ColorArgument.colorArgument("value")),
+                () -> argument("value", ColorArgumentType.color())),
         GLOWING(
                 Function.identity(),
                 Boolean.class::cast,
                 false,
-                () -> new BooleanArgument("value")),
+                () -> argument("value", BoolArgumentType.bool())),
         DISPLAY_HEIGHT(
                 Function.identity(),
                 rawValue -> ((Number) rawValue).floatValue(),
                 0F,
-                () -> new FloatArgument("value")),
+                () -> argument("value", FloatArgumentType.floatArg())),
         DISPLAY_WIDTH(
                 Function.identity(),
                 rawValue -> ((Number) rawValue).floatValue(),
                 0F,
-                () -> new FloatArgument("value")),
+                () -> argument("value", FloatArgumentType.floatArg())),
         SHADOW_RADIUS(
                 Function.identity(),
                 rawValue -> ((Number) rawValue).floatValue(),
                 0F,
-                () -> new FloatArgument("value")),
+                () -> argument("value", FloatArgumentType.floatArg())),
         SHADOW_STRENGTH(
                 Function.identity(),
                 rawValue -> ((Number) rawValue).floatValue(),
                 1F,
-                () -> new FloatArgument("value")),
+                () -> argument("value", FloatArgumentType.floatArg())),
         VIEW_RANGE(
                 Function.identity(),
                 rawValue -> ((Number) rawValue).floatValue(),
                 1F,
-                () -> new FloatArgument("value")),
+                () -> argument("value", FloatArgumentType.floatArg())),
         ;
 
         private final Function<Object, Object> serializer, deserializer;
         private final Object defaultValue;
-        private final Supplier<Argument<?>> argumentSupplier;
+        private final Supplier<ArgumentBuilder<CommandSourceStack, ?>> argumentSupplier;
 
-        public Argument<?> getCommandArgument() {
+        public ArgumentBuilder<CommandSourceStack, ?> getCommandArgument() {
             return argumentSupplier.get();
         }
     }

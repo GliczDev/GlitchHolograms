@@ -1,26 +1,24 @@
 package me.glicz.holograms.command.subcommand.line;
 
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.ArgumentSuggestions;
-import dev.jorel.commandapi.arguments.LiteralArgument;
-import dev.jorel.commandapi.arguments.StringArgument;
-import dev.jorel.commandapi.executors.CommandArguments;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import me.glicz.holograms.GlitchHologramsAPI;
-import me.glicz.holograms.line.HologramLine;
+import me.glicz.holograms.command.subcommand.SubCommand;
 
-public class LineSubCommand {
-    protected static String getLineContent(HologramLine.Type type, CommandArguments args) {
-        return type == HologramLine.Type.TEXT
-                ? args.<String>getOptionalUnchecked("content").orElseThrow()
-                : args.getRawOptional("content").orElseThrow();
-    }
+import static io.papermc.paper.command.brigadier.Commands.argument;
 
-    public Argument<String> get() {
-        return new LiteralArgument("line")
-                .then(new StringArgument("id")
-                        .replaceSuggestions(ArgumentSuggestions.strings((info) ->
-                                GlitchHologramsAPI.get().getRegisteredHologramKeys().toArray(String[]::new)
-                        ))
+@SuppressWarnings("UnstableApiUsage")
+public class LineSubCommand implements SubCommand {
+    public LiteralArgumentBuilder<CommandSourceStack> get() {
+        return Commands.literal("line")
+                .then(argument("id", StringArgumentType.word())
+                        .suggests((context, builder) -> {
+                            GlitchHologramsAPI.get().getRegisteredHologramKeys()
+                                    .forEach(builder::suggest);
+                            return builder.buildFuture();
+                        })
                         .then(new LineAddSubCommand().get())
                         .then(new LineInsertSubCommand().get())
                         .then(new LineModifySubCommand().get())

@@ -1,11 +1,9 @@
 package me.glicz.holograms.command.subcommand;
 
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.executors.CommandArguments;
-import org.bukkit.entity.Player;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 
+@SuppressWarnings("UnstableApiUsage")
 public interface SubCommand {
-    Argument<?> get();
-
-    void execute(Player sender, CommandArguments args);
+    LiteralArgumentBuilder<CommandSourceStack> get();
 }
