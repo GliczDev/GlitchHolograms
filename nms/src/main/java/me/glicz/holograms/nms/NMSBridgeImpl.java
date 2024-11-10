@@ -33,7 +33,20 @@ public class NMSBridgeImpl implements NMSBridge {
 
     @Override
     public void sendHologramLine(Player player, Entity entity, Object content) {
-        serverPlayer(player).connection.send(new ClientboundAddEntityPacket(((CraftEntity) entity).getHandle()));
+        net.minecraft.world.entity.Entity handle = ((CraftEntity) entity).getHandle();
+        serverPlayer(player).connection.send(new ClientboundAddEntityPacket(
+                handle.getId(),
+                handle.getUUID(),
+                handle.trackingPosition().x(),
+                handle.trackingPosition().y(),
+                handle.trackingPosition().z(),
+                handle.getXRot(),
+                handle.getYRot(),
+                handle.getType(),
+                0,
+                handle.getDeltaMovement(),
+                handle.getYHeadRot()
+        ));
         sendHologramLineData(player, entity, content);
     }
 
